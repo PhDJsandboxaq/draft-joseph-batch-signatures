@@ -66,44 +66,27 @@ These challenges are amplified by upcoming public-key cryptography standards: In
 
 ## Terminology {#terminology}
 
-UDP
-TCP
-TLS
-QUIC
-DNS
-connection-based protocol
-connectionless protocol
+- **DSA** Digital Signature Algorithm, a public key cryptography primitive consisting of a triple of algorithms _KeyGen_, _Sign_, _Verify_ whereby:
+  - _KeyGen(k)_ outputs a keypair _sk, pk_ where _k_ is a security parameter
+  - _Sign(msg, sk) = s_
+  - _Verify(s, msg, pk) = ACCEPT_ on receipt of message, correctly signed with the secret key _sk_ corresponding to _pk_.
 
+## Motivation for batching messages before signing {#motivation}
 
-## Motivation for handshaking over UDP {#motivation}
-
-
+Batch signing enables the scaling of slow algorithms by signing large batches of messages simultaneously. This comes at a relatively low latency cost, and significant throughput improvements. These advantages are particularly pertinent when considering the use of post-quantum signatures, such as those being standardised by NIST at the time of writing.
 
 
 ## Scope {#scope}
 
-This document focuses on TurboTLS {{TurboTLS}}. It covers everything needed to achieve the handshaking portion of a TLS connection over UDP, including
+This document describes a construction for Batch signatures based upon a Merkle tree design. The total signature consists of a signature of the root of the Merkle tree, as well as the sibling path of the individual message. We discuss the applicability of such signatures to various protocols, but only at a high level. The document describes a scheme which enables smaller signatures than outlined in {{Ben20}} by relying not on hash collision resistance, but instead on target collision resistance, however for the security proofs the reader should see \cite{original paper!}.
 
-- **Construction in principle:** It provides an outline of which flows are sent over UDP, which are sent over TCP and in what order.
-  
-
-
-
-## Goals {#goals}
-
-- **High performance:** Successful use of TurboTLS removes one round trip and should cut handshaking time by up to 50%. However in the worst case, when the fallback mechanism to TLS-over-TCP is used, there should be only a minimal impact on latency.
+# Batch signature construction {#construction}           
 
 
 
+## Sign {#Construction-sign}
 
-# Transport Layer Security {#TLS}
-
-
-# Construction for TurboTLS {#construction}           
-
-
-
-## TurboTLS support advertisment {#Construction-advertisment}
+## Verify {#Construction-verify}
 
 
 # Discussion {#discussion}
@@ -111,9 +94,13 @@ This document focuses on TurboTLS {{TurboTLS}}. It covers everything needed to a
 
 # Security Considerations {#security-considerations}
 
-## Transparent proxying {#security-proxy}
+## Correctness
 
-## Denial-of-Service {#security-DoS}
+## Domain separation
+
+## Target collision resistance vs collision resistance
+
+## Privacy
 
 # Acknowledgements
 
