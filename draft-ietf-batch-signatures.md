@@ -64,12 +64,18 @@ These challenges are amplified by upcoming public-key cryptography standards: In
 
 
 
-## Terminology {#terminology}
+## Conventions and definitions {#Conventions}
+
+### Signatures {#Conventions-signatures}
 
 - **DSA** Digital Signature Algorithm, a public key cryptography primitive consisting of a triple of algorithms _KeyGen_, _Sign_, _Verify_ whereby:
   - _KeyGen(k)_ outputs a keypair _sk, pk_ where _k_ is a security parameter
   - _Sign(msg, sk) = s_
   - _Verify(s, msg, pk) = ACCEPT_ on receipt of message, correctly signed with the secret key _sk_ corresponding to _pk_.
+
+ ### Hash functions {#Conventions-hashes}
+
+ **Properties of hash functions**
 
 ## Motivation for batching messages before signing {#motivation}
 
