@@ -69,11 +69,17 @@ These challenges are amplified by upcoming public-key cryptography standards: In
 ### Signatures {#Conventions-signatures}
 
 - **DSA** Digital Signature Algorithm, a public key cryptography primitive consisting of a triple of algorithms _KeyGen_, _Sign_, _Verify_ whereby:
-  - _KeyGen(k)_ outputs a keypair _sk, pk_ where _k_ is a security parameter
-  - _Sign(msg, sk) = s_
-  - _Verify(s, msg, pk) = ACCEPT_ on receipt of message, correctly signed with the secret key _sk_ corresponding to _pk_.
+  - $KeyGen(k)$ outputs a keypair _sk, pk_ where _k_ is a security parameter
+  - $Sign(msg, sk) = s$
+  - $Verify(s, msg, pk) = b$. When $b=1$, the result is ACCEPT which occurs on receipt of message, correctly signed with the secret key $sk$ corresponding to $pk$. Otherwise the result is REJECT when $b=0$.
 
  ### Hash functions {#Conventions-hashes}
+ 
+ In this work we consider _tweakable_ hash functions. These are keyed hash functions that take an additional input which can be thought of as a domain separator (while the key or public parameter serves as a separator between users). Tweakable hash functions allow us to tightly achieve target collision resistance even in multi-target settings where an adversary wins when they manage to attack one out of many targets.
+
+ **Tweakable Hash functions** A _tweakable hash function_ is a tuple of algorithms $H=(KeyGen, Eval)$ such that:
+ - $KeyGen$ takes the security parameter $k$ and outputs a (possibly empty) public parameter $p$. We write $p <-- KeyGen(k)$.
+ - $Eval$ is deterministic and takes public parameters $p$, a tweak $t$, an input $msg$ in $[0,1]^m$ and returns a hash value $h$. We write $h <-- Eval(p,t,msg)$ or simply $h <-- H(p,t,msg)$.
 
  **Properties of hash functions**
 
