@@ -53,6 +53,7 @@ informative:
   CAMPAGNA: I-D.campagna-tls-bike-sike-hybrid
   
 --- abstract
+
 This document proposes a construction for batch signatures where a single, 
 potentially expensive, "inner" digital signature authenticates a Merkle tree 
 constructed from many messages.
@@ -121,7 +122,11 @@ Batch signing enables the scaling of slow algorithms by signing large batches of
 messages simultaneously. This comes at a relatively low latency cost, and significant 
 throughput improvements. These advantages are particularly pertinent when considering 
 the use of post-quantum signatures, such as those being standardised by NIST at 
-the time of writing.
+the time of writing. In some applications, the amount of data that needs to be sent 
+can be reduced in addition; namely, if a given entity (is aware that it) receives 
+multiple signatures from the same batch. In this case, sending the signed root 
+multiple times is redundant and we can asymptotically reduce the amount of 
+received information to a few hashes per message.
 
 <!-- What about producing a small signature for many messages, indepenent of algorithm speed? -->
 
@@ -154,6 +159,15 @@ the security proofs the reader should see \cite{original paper!}.
 
 
 # Security Considerations {#security-considerations}
+
+A reduction in certificate sizes is proposed by a new type of 
+CA (certificate authority) which would exclusively sign a new type 
+of batch oriented certificates.  Such a CA would only be used together 
+with a Certificate Transparency log, which changes the usual required 
+flows for authentication. The benefits obtained in certificate size and 
+verification/signature costs are significant. It also implies that the 
+main criterion for being on a same batch are: being signed by the same CA, 
+and being signed roughly at the same time.
 
 ## Correctness
 
