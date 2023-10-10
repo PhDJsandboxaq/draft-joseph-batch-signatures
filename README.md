@@ -1,11 +1,4 @@
-# Hybrid key exchange in TLS 1.3
-
-This is the working area for the IETF [TLS Working Group](https://datatracker.ietf.org/wg/tls/documents/) Internet-Draft, "Hybrid key exchange in TLS 1.3".
-
-* [Editor's Copy](https://dstebila.github.io/draft-ietf-tls-hybrid-design/#go.draft-ietf-tls-hybrid-design.html)
-* [Datatracker Page](https://datatracker.ietf.org/doc/draft-ietf-tls-hybrid-design)
-* [Working Group Draft](https://datatracker.ietf.org/doc/html/draft-ietf-tls-hybrid-design)
-* [Compare Editor's Copy to Working Group Draft](https://dstebila.github.io/draft-ietf-tls-hybrid-design/#go.draft-ietf-tls-hybrid-design.diff)
+# Batch Signatures
 
 
 ## Contributing
