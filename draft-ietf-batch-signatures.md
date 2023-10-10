@@ -51,6 +51,7 @@ informative:
   BERNSTEIN: DOI.10.1007/978-3-540-88702-7
   BINDEL: DOI.10.1007/978-3-030-25510-7_12
   CAMPAGNA: I-D.campagna-tls-bike-sike-hybrid
+  
 --- abstract
 This document proposes a construction for batch signatures where a single, potentially expensive, "inner" digital signature authenticates a Merkle tree constructed from many messages.
 
@@ -102,6 +103,10 @@ This document describes a construction for Batch signatures based upon a Merkle 
 
 
 # Discussion {#discussion}
+
+<!-- Hybrid?  Can just do any other hybrid construction scheme, have BSign just call that internally as S.Sign, and S.Verify. We should consider the separability concerns etc though. -->
+<!-- How are tree id's generated in a cross-instantiation-secure way? Are we worried about collisions? λ only ranges up to 256. -->
+<!-- Maybe domain separate the tree hash function H with a label prefix before the rest -->
 
 
 # Security Considerations {#security-considerations}
