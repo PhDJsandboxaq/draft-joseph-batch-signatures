@@ -107,6 +107,8 @@ This document describes a construction for Batch signatures based upon a Merkle 
 <!-- Hybrid?  Can just do any other hybrid construction scheme, have BSign just call that internally as S.Sign, and S.Verify. We should consider the separability concerns etc though. -->
 <!-- How are tree id's generated in a cross-instantiation-secure way? Are we worried about collisions? λ only ranges up to 256. -->
 <!-- Maybe domain separate the tree hash function H with a label prefix before the rest -->
+<!-- How does this differ from Merkle Tree Certificates? 'It has a merkle tree in it' -->
+
 
 
 # Security Considerations {#security-considerations}
