@@ -93,7 +93,7 @@ to PQC, especially in higher-throughput settings.
 - **DSA** Digital Signature Algorithm, a public key cryptography primitive
   consisting of a triple of algorithms _KeyGen_, _Sign_, _Verify_ whereby:
   - _KeyGen(k)_ outputs a keypair _sk, pk_ where _k_ is a security parameter
-  - _Sign(msg, sk) = s_
+  - _Sign(sk, msg) = s_
   - _Verify(s, msg, pk) = b_. When _b=1_, the result is ACCEPT which occurs
     on receipt of message, correctly signed with the secret key _sk_ corresponding
     to _pk_. Otherwise the result is REJECT when _b=0_.
@@ -154,11 +154,11 @@ the security proofs the reader should see \cite{original paper!}.
 
 # Batch signature construction {#construction}           
 
-
-
-## Sign {#Construction-sign}
-
-## Verify {#Construction-verify}
+We define a batch signature as a triple of algorithms
+- **Batch signature** a batch signature scheme is comprised of _KeyGen_, _BSign_, _Verify_ whereby:
+  - _KeyGen(k)_ outputs a keypair _sk, pk_ where _k_ is a security parameter
+  - _BSign(sk, M)_ the batch signing algorithm takes as input a list of messages _M = {msg~i~}_ and outputs a list of signatures _S={sig~i~}_. We write _S <-- BSign(sk,M)_
+  - _Verify(pk, sig, msg)_ The verification algorithm takes as input a verification key _pk_, a signature _sig_ and a message _msg_ and outputs a bit _b_, with _b=1_ meaning the signature is valid and _b=0_ meaning the signature is invalid. _Verify_ is a deterministic algorithm. We write _b <-- Verify(pk, sig, msg)_.
 
 
 # Discussion {#discussion}
