@@ -77,7 +77,7 @@ These challenges are amplified by upcoming public-key cryptography standards: in
 July 2022, the US National Institute of Standards and Technology (NIST) announced 
 four algorithms for post-quantum cryptography (PQC) standardisation. In particular, 
 three digital signature algorithms -- Dilithium~\cite{NISTPQC:CRYSTALS-DILITHIUM22}, 
-Falcon~\cite{NISTPQC:FALCON22} and SPHINCS$^+$~\cite{NISTPQC:SPHINCS+22} -- were 
+Falcon~\cite{NISTPQC:FALCON22} and SPHINCS_^+_~\cite{NISTPQC:SPHINCS+22} -- were 
 selected, and migration from current standards to these new algorithms is already 
 underway~\cite{nsm_10}. One of the key issues when considering migrating to PQC is 
 that the computational costs of the new digital signature algorithms are significantly 
@@ -86,35 +86,47 @@ This severely impacts the ability of systems to scale and inhibits their migrati
 to PQC, especially in higher-throughput settings.
 
 
-## Conventions and definitions {#Conventions}
+# Preliminaries {#Preliminaries}
 
-### Signatures {#Conventions-signatures}
+## Signatures {#Preliminaries-signatures}
 
 - **DSA** Digital Signature Algorithm, a public key cryptography primitive
   consisting of a triple of algorithms _KeyGen_, _Sign_, _Verify_ whereby:
-  - $KeyGen(k)$ outputs a keypair _sk, pk_ where _k_ is a security parameter
-  - $Sign(msg, sk) = s$
-  - $Verify(s, msg, pk) = b$. When $b=1$, the result is ACCEPT which occurs
-    on receipt of message, correctly signed with the secret key $sk$ corresponding
-    to $pk$. Otherwise the result is REJECT when $b=0$.
+  - _KeyGen(k)_ outputs a keypair _sk, pk_ where _k_ is a security parameter
+  - _Sign(msg, sk) = s_
+  - _Verify(s, msg, pk) = b_. When _b=1_, the result is ACCEPT which occurs
+    on receipt of message, correctly signed with the secret key _sk_ corresponding
+    to _pk_. Otherwise the result is REJECT when _b=0_.
 
- ### Hash functions {#Conventions-hashes}
+## Hash functions {#Preliminaries-hashes}
  
- In this work we consider _tweakable_ hash functions. These are keyed hash functions 
- that take an additional input which can be thought of as a domain separator (while 
- the key or public parameter serves as a separator between users). Tweakable hash 
- functions allow us to tightly achieve target collision resistance even in multi-target 
- settings where an adversary wins when they manage to attack one out of many targets.
+In this work we consider _tweakable_ hash functions. These are keyed hash functions 
+that take an additional input which can be thought of as a domain separator (while 
+the key or public parameter serves as a separator between users). Tweakable hash 
+functions allow us to tightly achieve target collision resistance even in multi-target 
+settings where an adversary wins when they manage to attack one out of many targets.
+
+**Keyed Hash function** A keyed hash function is one that outputs a hash that depends both on a message _msg_ and a key _v_ that is shared by both the hash generator and the hash validator. It is easiest to compute via prepending the key to the message before computing the hash _h <-- H(v||msg)_. Let _H~v~_ denote the family of hash functions keyed with _v_.
+
+### Hash function properties {#Preliminaries-hash-properties}
+
+* Collision resistance - no two inputs _x^1^, x^2^_ should map to the same output hash (regardless of choice of key in the case of a keyed hash). 
+* Preimage resistance - it should be difficult to guess the input value _x_ for a hash function given only its output _H(x)_. 
+* Second preimage resistance - given an input _x^1^_, it should be difficult to find another distinct input _x^2^_ such that _H(x^1^)=H(x^2^)_.
+* Target collision resistance - choose input _x^1^_. Then given a key _v_, find _x^2^_ such that _H~v~(x^1^) = H~v~(x^2^)_.
+
+Target collision resistance is a weaker requirement than collision resistance but is sufficient for signing purposes. Tweakable hash functions enable us to tightly achieve TCR even in multi-target settings where an adversary can attack one out of many targets. Specifically, the property achieved in the following is _single-function multi-target collision resistance_ (SM-TCR) which is described more formally in \cite{out paper}.
+
+One form of keyed hash function is a tweakable hash function, which enables one to obtain SM-TCR:
 
  **Tweakable Hash functions** A _tweakable hash function_ is a tuple of algorithms 
- $H=(KeyGen, Eval)$ such that:
- - $KeyGen$ takes the security parameter $k$ and outputs a (possibly empty) public
-   parameter $p$. We write $p <-- KeyGen(k)$.
- - $Eval$ is deterministic and takes public parameters $p$, a tweak $t$, an input $msg$
-   in $[0,1]^m$ and returns a hash value $h$. We write $h <-- Eval(p,t,msg)$ or
-   simply $h <-- H(p,t,msg)$.
+ _H=(KeyGen, Eval)_ such that:
+ - _KeyGen_ takes the security parameter _k_ and outputs a (possibly empty) public
+   parameter _p_. We write _p <-- KeyGen(k)_.
+ - _Eval_ is deterministic and takes public parameters _p_, a tweak _t_, an input _msg_
+   in _[0,1]^m_ and returns a hash value _h_. We write _h <-- Eval(p,t,msg)_ or
+   simply _h <-- H(p,t,msg)_.
 
- **Properties of hash functions**
 
 ## Motivation for batching messages before signing {#motivation}
 
