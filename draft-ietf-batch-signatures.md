@@ -160,13 +160,15 @@ We define a batch signature as a triple of algorithms
 - **Batch signature** a batch signature scheme is comprised of _KeyGen_, _BSign_, _Verify_ whereby:
   - _KeyGen(k)_ outputs a keypair _sk, pk_ where _k_ is a security parameter
   - _BSign(sk, M)_ the batch signing algorithm takes as input a list of messages _M = {msg~i~}_ and outputs a list of signatures _S={sig~i~}_. We write _S <-- BSign(sk,M)_
-  - _Verify(pk, sig, msg)_ The verification algorithm takes as input a verification key _pk_, a signature _sig_ and a message _msg_ and outputs a bit _b_, with _b=1_ meaning the signature is valid and _b=0_ meaning the signature is invalid. _Verify_ is a deterministic algorithm. We write _b <-- Verify(pk, sig, msg)_.
+  - _PVerify(pk, sig, msg)_ The verification algorithm takes as input a verification key _pk_, a signature _sig_ and a message _msg_ and outputs a bit _b_, with _b=1_ meaning the signature is valid and _b=0_ meaning the signature is invalid. _PVerify_ is a deterministic algorithm. We write _b <-- PVerify(pk, sig, msg)_. We call the verification _PVerify_ to represent Path Verification, because in the construction outlined below, verification involves an extra step of verifying a sibling path, which _Verify_ in the ordinary DSA setting does not do.
 
 ## Merkle tree batch signature
 
 Our construction relies on a Merkle tree. When addressing nodes in a Merkle tree of height _h_ with _N_ leaves, we may label nodes and leaves in the tree by their position: _n~i,k~_ is the _i_-th node at height _k_, counting from left to right and from bottom upwards (i.e.~leaves are on height _0_ and the root is on height _h_. We illustrate this in \cref{fig:merkle-tree}.
 
 Let _Sig=(KeyGen, Sign, Verify)_ be a DSA as defined in \cref{def:digital-signature}, let _thash_ be a tweakable hash function as defined in \cref{def:tweakable-hash-function}. We define our batch signature scheme  _BSig = (KeyGen, BSign, BVerify_ with _KeyGen := Sig.KeyGen_ and _BSign, Verify_ as in \cref{alg:bsign,alg:bverify} respectively.
+
+Here we describe the case of binary Merkle trees. In the case where _N_ is not a power of _2_, one can pad the tree by repeating leaves, or else continue with an incomplete tree.
 
 # Discussion {#discussion}
 
