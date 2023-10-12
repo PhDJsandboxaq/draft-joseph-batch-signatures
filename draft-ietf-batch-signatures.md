@@ -170,6 +170,30 @@ Let _Sig=(KeyGen, Sign, Verify)_ be a DSA as defined in \cref{def:digital-signat
 
 Here we describe the case of binary Merkle trees. In the case where _N_ is not a power of _2_, one can pad the tree by repeating leaves, or else continue with an incomplete tree.
 
+## Signing {#construction-signing}
+
+_BSign(sk, M=[msg~0~,...,msg~N-1~])_ where _N=2^n^_. We first treat the case that _N_ is a power of _2_, and then consider incomplete trees using standard methods.
+
+### Tree computation {#construction-tree}
+
+1. **Initialize tree** _T[]_, which is indexed by the level, and then the row index, e.g. _T[3,5]_ is the fifth node on level _3_ of _T_. Height _h <-- log~2~N_
+2. **Tree identifier** Sample a tree identifier _id <--$ {0,1}^k^_
+3. **Generate leaves** For leaf _i in [0,...,N-1]_, sample randomness _r~i~ <--$ {0,1}^k^_. Then set _T[0,i]=H(id,0,i,r~i~,msg~i~)_
+4. **Populate tree** For levels _l in [1,..., h]_ compute level _l_ from level _l-1_ as follows:
+* Initialize level _l_ with half as many elements as level _l-1_.
+* For node _j_ on level _l_, set _left=T[l-1, 2j]_ and right=T[l-1, 2j+1]_
+* _id_ is the public parameter, _(1, l, j)_ is the tweak.
+* _T[l, j] <-- H(id | 1 | l | j | left | right)_
+5. **Root** set _root <-- T[h,0]_
+
+### Signature construction {#construction-signature}
+1. **Sign the root** Use the base DSA to sign the root of the Merkle tree _rootsig <-- Sign(sk, id, root, N)_
+2. **Sibling path** For each leaf: compute the sibling path as follows:
+* Initialize _path~i~ <-- []_
+* For _l in [0, ..., N-1]_, set _j <--floor(i/2^l^)_. If _j mod 2 = 0_ then _path~i~[l]=T[l,j+1]_, else _path~i~[l]=T[l,j-1]_
+
+## Verification {#construction-verification}
+
 # Discussion {#discussion}
 
 <!-- Hybrid?  Can just do any other hybrid construction scheme, have BSign just call that internally as S.Sign, and S.Verify. We should consider the separability concerns etc though. -->
