@@ -207,7 +207,7 @@ _BSign(sk, M=\[msg~0~,...,msg~N-1~\])_ where _N=2^n^_. We first treat the case t
   lvl1 T00 T01 T02 T03 T04 T05 T06 T07
        |    |   |   |   |   |   |   |
        |            |               |
-     H(_) ... H(id,0,i,ri,msgi)  ...H(_)
+     H(_) ... H(id,0,3,r3,msg3)  ...H(_)
 
 ```
 
