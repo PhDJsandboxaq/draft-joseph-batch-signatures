@@ -159,7 +159,7 @@ the security proofs the reader should see \cite{original paper!}.
 We define a batch signature as a triple of algorithms
 - **Batch signature** a batch signature scheme is comprised of _KeyGen_, _BSign_, _Verify_ whereby:
   - _KeyGen(k)_ outputs a keypair _sk, pk_ where _k_ is a security parameter
-  - _BSign(sk, M)_ the batch signing algorithm takes as input a list of messages _M = {msg~i~}_ and outputs a list of signatures _S={sig~i~}_. We write _S <-- BSign(sk,M)_
+  - _BSign(sk, M)_ the batch signing algorithm takes as input a list of messages _M = {msg~i~}_ and outputs a list of signatures _S=\{sig~i~\}_. We write _S <-- BSign(sk,M)_
   - _PVerify(pk, sig, msg)_ The verification algorithm takes as input a verification key _pk_, a signature _sig_ and a message _msg_ and outputs a bit _b_, with _b=1_ meaning the signature is valid and _b=0_ meaning the signature is invalid. _PVerify_ is a deterministic algorithm. We write _b <-- PVerify(pk, sig, msg)_. We call the verification _PVerify_ to represent Path Verification, because in the construction outlined below, verification involves an extra step of verifying a sibling path, which _Verify_ in the ordinary DSA setting does not do.
 
 ## Merkle tree batch signature
@@ -177,8 +177,8 @@ _BSign(sk, M=[msg~0~,...,msg~N-1~])_ where _N=2^n^_. We first treat the case tha
 ### Tree computation {#construction-tree}
 
 1. **Initialize tree** _T[]_, which is indexed by the level, and then the row index, e.g. _T[3,5]_ is the fifth node on level _3_ of _T_. Height _h <-- log~2~N_
-2. **Tree identifier** Sample a tree identifier _id <--$ {0,1}^k^_
-3. **Generate leaves** For leaf _i in [0,...,N-1]_, sample randomness _r~i~ <--$ {0,1}^k^_. Then set _T[0,i]=H(id,0,i,r~i~,msg~i~)_
+2. **Tree identifier** Sample a tree identifier _id <--$ \{0,1\}^k^_
+3. **Generate leaves** For leaf _i in [0,...,N-1]_, sample randomness _r~i~ <--$ \{0,1\}^k^_. Then set _T[0,i]=H(id,0,i,r~i~,msg~i~)_
 4. **Populate tree** For levels _l in [1,..., h]_ compute level _l_ from level _l-1_ as follows:
 * Initialize level _l_ with half as many elements as level _l-1_.
 * For node _j_ on level _l_, set _left=T[l-1, 2j]_ and right=T[l-1, 2j+1]_
@@ -188,11 +188,17 @@ _BSign(sk, M=[msg~0~,...,msg~N-1~])_ where _N=2^n^_. We first treat the case tha
 
 ### Signature construction {#construction-signature}
 1. **Sign the root** Use the base DSA to sign the root of the Merkle tree _rootsig <-- Sign(sk, id, root, N)_
-2. **Sibling path** For each leaf: compute the sibling path as follows:
+2. **Sibling path** For each leaf: The sibling path is an array of _h-1_ hashes. Compute the sibling path as follows:
 * Initialize _path~i~ <-- []_
 * For _l in [0, ..., N-1]_, set _j <--floor(i/2^l^)_. If _j mod 2 = 0_ then _path~i~[l]=T[l,j+1]_, else _path~i~[l]=T[l,j-1]_
+3. **Generate batch signatures** _bsig~i~ <-- (id, N, sig, i, r~i~, path~i~)_
+4. **Return batch of signatures** batch signatures are \{bsig~1~, ..., bsig~N~\}
 
 ## Verification {#construction-verification}
+
+Verification proceeds by first reconstructing the root hash via the leaf information (public parameters, tweak, message) and iteravely hashing with the nodes provided in the sibling path. Next the base verification algorithm is called to verify the base DSA signature of the root.
+
+
 
 # Discussion {#discussion}
 
