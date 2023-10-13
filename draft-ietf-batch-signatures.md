@@ -94,7 +94,7 @@ to PQC, especially in higher-throughput settings.
   consisting of a triple of algorithms _KeyGen_, _Sign_, _Verify_ whereby:
   - _KeyGen(k)_ outputs a keypair _sk, pk_ where _k_ is a security parameter
   - _Sign(sk, msg) = s_
-  - _Verify(s, msg, pk) = b_. When _b=1_, the result is ACCEPT which occurs
+  - _Verify(pk, s, msg) = b_. When _b=1_, the result is ACCEPT which occurs
     on receipt of message, correctly signed with the secret key _sk_ corresponding
     to _pk_. Otherwise the result is REJECT when _b=0_.
 
@@ -106,7 +106,7 @@ the key or public parameter serves as a separator between users). Tweakable hash
 functions allow us to tightly achieve target collision resistance even in multi-target 
 settings where an adversary wins when they manage to attack one out of many targets.
 
-**Keyed Hash function** A keyed hash function is one that outputs a hash that depends both on a message _msg_ and a key _v_ that is shared by both the hash generator and the hash validator. It is easiest to compute via prepending the key to the message before computing the hash _h <-- H(v||msg)_. Let _H~v~_ denote the family of hash functions keyed with _v_.
+**Keyed Hash function** A keyed hash function is one that outputs a hash that depends both on a message _msg_ and a key _v_ that is shared by both the hash generator and the hash validator. It is easiest to compute via prepending the key to the message before computing the hash _h <-- H(v | msg)_. Let _H~v~_ denote the family of hash functions keyed with _v_.
 
 ### Hash function properties {#Preliminaries-hash-properties}
 
@@ -178,7 +178,7 @@ _BSign(sk, M=[msg~0~,...,msg~N-1~])_ where _N=2^n^_. We first treat the case tha
 
 1. **Initialize tree** _T[]_, which is indexed by the level, and then the row index, e.g. _T[3,5]_ is the fifth node on level _3_ of _T_. Height _h <-- log~2~N_
 2. **Tree identifier** Sample a tree identifier _id <--$ \{0,1\}^k^_
-3. **Generate leaves** For leaf _i in [0,...,N-1]_, sample randomness _r~i~ <--$ \{0,1\}^k^_. Then set _T[0,i]=H(id,0,i,r~i~,msg~i~)_
+3. **Generate leaves** For leaf _i in [0,...,N-1]_, sample randomness _r~i~ <--$ \{0,1\}^k^_. Then set _T[0,i]=H(id | 0 | i | r~i~ | msg~i~)_
 4. **Populate tree** For levels _l in [1,..., h]_ compute level _l_ from level _l-1_ as follows:
 * Initialize level _l_ with half as many elements as level _l-1_.
 * For node _j_ on level _l_, set _left=T[l-1, 2j]_ and right=T[l-1, 2j+1]_
@@ -198,7 +198,11 @@ _BSign(sk, M=[msg~0~,...,msg~N-1~])_ where _N=2^n^_. We first treat the case tha
 
 Verification proceeds by first reconstructing the root hash via the leaf information (public parameters, tweak, message) and iteravely hashing with the nodes provided in the sibling path. Next the base verification algorithm is called to verify the base DSA signature of the root.
 
-
+1. **Generate leaf hash** Get hash from public parameter, tweak, and message _h <-- H(id | 0 | i | r | msg)_.
+2. **Reconstruct root** Set _l=0_. For _l in \[ 1,...,h\]_ set _j <-- floor(i / 2^l^)_.
+* If _j mod 2 = 0_: set _h <-- H(id | 1 | l | j | h | path\[l\])_
+* If _j mod 2 = 1_: set _h <-- H(id | 1 | l | j | path\[l\] | h)_
+3. **Verify root** Return _Verify(pk, sig, h)
 
 # Discussion {#discussion}
 
