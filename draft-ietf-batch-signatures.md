@@ -20,6 +20,11 @@ author:
     organization: SandboxAQ 
     email: dj@sandboxaq.com
   -
+    ins: D. Connelly
+    name: Deirdre Connelly
+    organization: SandboxAQ
+    email: deirdre.connolly@sandboxquantum.com
+  -
     ins: C. Aguilar-Melchor
     name: Carlos Aguilar-Melchor
     organization: SandboxAQ
@@ -32,7 +37,7 @@ normative:
 informative:
   AES-NI:
     target: https://www.intel.cn/content/dam/develop/external/us/en/documents/10tb24-breakthrough-aes-performance-with-intel-aes-new-instructions-final-secure-165940.pdf
-    title:"Breakthrough AES Performance with Intel AES New Instructions"
+    title: "Breakthrough AES Performance with Intel AES New Instructions"
     date: 2010
     author:
       -
