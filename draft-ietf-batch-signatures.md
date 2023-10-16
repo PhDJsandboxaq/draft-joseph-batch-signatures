@@ -17,7 +17,7 @@ author:
   -
     ins: D. Joseph
     name: David Joseph
-    organization: SandboxAQ 
+    organization: SandboxAQ
     email: dj@sandboxaq.com
   -
     ins: D. Connelly
@@ -147,7 +147,7 @@ to PQC, especially in higher-throughput settings.
     to _pk_. Otherwise the result is REJECT when _b=0_.
 
 ## Hash functions {#Preliminaries-hashes}
- 
+
 In this work we consider _tweakable_ hash functions. These are keyed hash functions 
 that take an additional input which can be thought of as a domain separator (while 
 the key or public parameter serves as a separator between users). Tweakable hash 
@@ -158,8 +158,8 @@ settings where an adversary wins when they manage to attack one out of many targ
 
 ### Hash function properties {#Preliminaries-hash-properties}
 
-* Collision resistance - no two inputs _x1, x2_ should map to the same output hash (regardless of choice of key in the case of a keyed hash). 
-* Preimage resistance - it should be difficult to guess the input value _x_ for a hash function given only its output _H(x)_. 
+* Collision resistance - no two inputs _x1, x2_ should map to the same output hash (regardless of choice of key in the case of a keyed hash).
+* Preimage resistance - it should be difficult to guess the input value _x_ for a hash function given only its output _H(x)_.
 * Second preimage resistance - given an input _x1_, it should be difficult to find another distinct input _x2_ such that _H(x1)=H(x2)_.
 * Target collision resistance - choose input _x1_. Then given a key _v_, find _x2_ such that _Hv(x1) = Hv(x2)_.
 
@@ -169,8 +169,7 @@ Target collision resistance is a weaker requirement than collision resistance bu
 
 One form of keyed hash function is a tweakable hash function, which enables one to obtain SM-TCR:
 
- **Tweakable Hash functions** A _tweakable hash function_ is a tuple of algorithms 
- _H=(KeyGen, Eval)_ such that:
+ **Tweakable Hash functions** A _tweakable hash function_ is a tuple of algorithms _H=(KeyGen, Eval)_ such that:
  - _KeyGen_ takes the security parameter _k_ and outputs a (possibly empty) public
    parameter _p_. We write _p <-- KeyGen(k)_.
  - _Eval_ is deterministic and takes public parameters _p_, a tweak _t_, an input _msg_
@@ -202,7 +201,7 @@ a scheme which enables smaller signatures than outlined in {{Ben20}} by relying 
 on hash collision resistance, but instead on target collision resistance, however for 
 the security proofs the reader should see {{BATCHSIGREV}}.
 
-# Batch signature construction {#construction}           
+# Batch signature construction {#construction}
 
 ## Batch signature definition {#construction-batch-signature-definition}
 
