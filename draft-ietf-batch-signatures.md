@@ -116,7 +116,7 @@ stream or block ciphers typically require between a few cycles {{AES-NI}} to
 a few hundred cycles {{GUE2012PARALLEL}}, whereas key establishment 
 and digital signature primitives require between tens of thousands to hundreds 
 of millions of cycles {{SUPERCOP}}. In situations where a substantial 
-volume of signatures must be handled -- e.g.~a Hardware Security Module (HSM) 
+volume of signatures must be handled -- e.g. a Hardware Security Module (HSM) 
 renewing a large set of short-lived certificates or a load balancer terminating 
 a large number of TLS connections per second -- this may pose serious limitations 
 on scaling these and related scenarios.
@@ -154,14 +154,14 @@ the key or public parameter serves as a separator between users). Tweakable hash
 functions allow us to tightly achieve target collision resistance even in multi-target 
 settings where an adversary wins when they manage to attack one out of many targets.
 
-**Keyed Hash function** A keyed hash function is one that outputs a hash that depends both on a message _msg_ and a key _v_ that is shared by both the hash generator and the hash validator. It is easiest to compute via prepending the key to the message before computing the hash _h <-- H(v | msg)_. Let _H~v~_ denote the family of hash functions keyed with _v_.
+**Keyed Hash function** A keyed hash function is one that outputs a hash that depends both on a message _msg_ and a key _v_ that is shared by both the hash generator and the hash validator. It is easiest to compute via prepending the key to the message before computing the hash _h <-- H(v | msg)_. Let _Hv_ denote the family of hash functions keyed with _v_.
 
 ### Hash function properties {#Preliminaries-hash-properties}
 
-* Collision resistance - no two inputs _x^1^, x^2^_ should map to the same output hash (regardless of choice of key in the case of a keyed hash). 
+* Collision resistance - no two inputs _x1, x2_ should map to the same output hash (regardless of choice of key in the case of a keyed hash). 
 * Preimage resistance - it should be difficult to guess the input value _x_ for a hash function given only its output _H(x)_. 
-* Second preimage resistance - given an input _x^1^_, it should be difficult to find another distinct input _x^2^_ such that _H(x^1^)=H(x^2^)_.
-* Target collision resistance - choose input _x^1^_. Then given a key _v_, find _x^2^_ such that _H~v~(x^1^) = H~v~(x^2^)_.
+* Second preimage resistance - given an input _x1_, it should be difficult to find another distinct input _x2_ such that _H(x1)=H(x2)_.
+* Target collision resistance - choose input _x1_. Then given a key _v_, find _x2_ such that _Hv(x1) = Hv(x2)_.
 
 Target collision resistance is a weaker requirement than collision resistance but is sufficient for signing purposes. Tweakable hash functions enable us to tightly achieve TCR even in multi-target settings where an adversary can attack one out of many targets. Specifically, the property achieved in the following is _single-function multi-target collision resistance_ (SM-TCR) which is described more formally in {{BATCHSIGREV}}.
 
@@ -174,7 +174,7 @@ One form of keyed hash function is a tweakable hash function, which enables one 
  - _KeyGen_ takes the security parameter _k_ and outputs a (possibly empty) public
    parameter _p_. We write _p <-- KeyGen(k)_.
  - _Eval_ is deterministic and takes public parameters _p_, a tweak _t_, an input _msg_
-   in _[0,1]^m_ and returns a hash value _h_. We write _h <-- Eval(p,t,msg)_ or
+   in _\[0,1\]^m_ and returns a hash value _h_. We write _h <-- Eval(p,t,msg)_ or
    simply _h <-- H(p,t,msg)_.
 
 
@@ -209,12 +209,12 @@ the security proofs the reader should see {{BATCHSIGREV}}.
 We define a batch signature as a triple of algorithms
 - **Batch signature** a batch signature scheme is comprised of _KeyGen_, _BSign_, _Verify_ whereby:
   - _KeyGen(k)_ outputs a keypair _sk, pk_ where _k_ is a security parameter
-  - _BSign(sk, M)_ the batch signing algorithm takes as input a list of messages _M = {msg~i~}_ and outputs a list of signatures _S=\{sig~i~\}_. We write _S <-- BSign(sk,M)_
+  - _BSign(sk, M)_ the batch signing algorithm takes as input a list of messages _M = {msg-i}_ and outputs a list of signatures _S=\{sig-i\}_. We write _S <-- BSign(sk,M)_
   - _PVerify(pk, sig, msg)_ The verification algorithm takes as input a verification key _pk_, a signature _sig_ and a message _msg_ and outputs a bit _b_, with _b=1_ meaning the signature is valid and _b=0_ meaning the signature is invalid. _PVerify_ is a deterministic algorithm. We write _b <-- PVerify(pk, sig, msg)_. We call the verification _PVerify_ to represent Path Verification, because in the construction outlined below, verification involves an extra step of verifying a sibling path, which _Verify_ in the ordinary DSA setting does not do.
 
 ## Merkle tree batch signature
 
-Our construction relies on a Merkle tree. When addressing nodes in a Merkle tree of height _h_ with _N_ leaves, we may label nodes and leaves in the tree by their position: _n~i,k~_ is the _i_-th node at height _k_, counting from left to right and from bottom upwards (i.e.~leaves are on height _0_ and the root is on height _h_. We illustrate this in {{fig-merkle-tree}}.
+Our construction relies on a Merkle tree. When addressing nodes in a Merkle tree of height _h_ with _N_ leaves, we may label nodes and leaves in the tree by their position: _T\[i,k\]_ is the _i_-th node at height _k_, counting from left to right and from bottom upwards (i.e. leaves are on height _0_ and the root is on height _h_. We illustrate this in {{fig-merkle-tree}}.
 
 Let _Sig=(KeyGen, Sign, Verify)_ be a DSA as defined in {{Preliminaries-signatures}}, let _thash_ be a tweakable hash function as defined in {{Preliminaries-tweakable-hashes}}. We define our batch signature scheme  _BSig = (KeyGen, BSign, BVerify_ with _KeyGen := Sig.KeyGen_ and _BSign, Verify_ as in {{construction-batch-signature-definition}} respectively.
 
@@ -222,13 +222,13 @@ Here we describe the case of binary Merkle trees. In the case where _N_ is not a
 
 ## Signing {#construction-signing}
 
-_BSign(sk, M=\[msg~0~,...,msg~N-1~\])_ where _N=2^n^_. We first treat the case that _N_ is a power of _2_, and then consider incomplete trees using standard methods.
+_BSign(sk, M=\[msg-0,...,msg-N-1\])_ where _N=2^n_. We first treat the case that _N_ is a power of _2_, and then consider incomplete trees using standard methods.
 
 ### Tree computation {#construction-tree}
 
-1. **Initialize tree** _T\[\]_, which is indexed by the level, and then the row index, e.g. _T\[3,5\]_ is the fifth node on level _3_ of _T_. Height _h <-- log~2~N_
-2. **Tree identifier** Sample a tree identifier _id <--$ \{0,1\}^k^_
-3. **Generate leaves** For leaf _i in \[0,...,N-1\]_, sample randomness _r~i~ <--$ \{0,1\}^k^_. Then set _T[0,i]=H(id | 0 | i | r~i~ | msg~i~)_
+1. **Initialize tree** _T\[\]_, which is indexed by the level, and then the row index, e.g. _T\[3,5\]_ is the fifth node on level _3_ of _T_. Height _h <-- log2(N)_
+2. **Tree identifier** Sample a tree identifier _id <--$ \{0,1\}^k_
+3. **Generate leaves** For leaf _i in \[0,...,N-1\]_, sample randomness _r-i <--$ \{0,1\}^k_. Then set _T\[0,i\]=H(id | 0 | i | r-i | msg-i)_
 4. **Populate tree** For levels _l in \[1,..., h\]_ compute level _l_ from level _l-1_ as follows:
 * Initialize level _l_ with half as many elements as level _l-1_.
 * For node _j_ on level _l_, set _left=T\[l-1, 2j\]_ and _right=T\[l-1, 2j+1\]_
@@ -239,10 +239,10 @@ _BSign(sk, M=\[msg~0~,...,msg~N-1~\])_ where _N=2^n^_. We first treat the case t
 ### Signature construction {#construction-signature}
 1. **Sign the root** Use the base DSA to sign the root of the Merkle tree _rootsig <-- Sign(sk, id, root, N)_
 2. **Sibling path** For each leaf: The sibling path is an array of _h-1_ hashes. Compute the sibling path as follows:
-* Initialize _path~i~ <-- \[\]_
-* For _l in \[0, ..., N-1\]_, set _j <--floor(i/2^l^)_. If _j mod 2 = 0_ then _path~i~\[l\]=T\[l,j+1\]_, else _path~i~\[l\]=T\[l,j-1\]_
-3. **Generate batch signatures** _bsig~i~ <-- (id, N, sig, i, r~i~, path~i~)_
-4. **Return batch of signatures** batch signatures are \{bsig~1~, ..., bsig~N~\}
+* Initialize _path-i <-- \[\]_
+* For _l in \[0, ..., N-1\]_, set _j <--floor(i / 2^l)_. If _j mod 2 = 0_ then _path-i\[l\]=T\[l,j+1\]_, else _path-i\[l\]=T\[l,j-1\]_
+3. **Generate batch signatures** _bsig-i <-- (id, N, sig, i, r-i, path-i)_
+4. **Return batch of signatures** batch signatures are \{bsig-1, ..., bsig-N\}
 
 ```
 
@@ -267,7 +267,7 @@ _BSign(sk, M=\[msg~0~,...,msg~N-1~\])_ where _N=2^n^_. We first treat the case t
 Verification proceeds by first reconstructing the root hash via the leaf information (public parameters, tweak, message) and iteravely hashing with the nodes provided in the sibling path. Next the base verification algorithm is called to verify the base DSA signature of the root.
 
 1. **Generate leaf hash** Get hash from public parameter, tweak, and message _h <-- H(id | 0 | i | r | msg)_.
-2. **Reconstruct root** Set _l=0_. For _l in \[ 1,...,h\]_ set _j <-- floor(i / 2^l^)_.
+2. **Reconstruct root** Set _l=0_. For _l in \[ 1,...,h\]_ set _j <-- floor(i / 2^l)_.
 * If _j mod 2 = 0_: set _h <-- H(id | 1 | l | j | h | path\[l\])_
 * If _j mod 2 = 1_: set _h <-- H(id | 1 | l | j | path\[l\] | h)_
 3. **Verify root** Return _Verify(pk, sig, h)
