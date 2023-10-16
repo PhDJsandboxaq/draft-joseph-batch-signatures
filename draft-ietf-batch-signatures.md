@@ -165,6 +165,8 @@ settings where an adversary wins when they manage to attack one out of many targ
 
 Target collision resistance is a weaker requirement than collision resistance but is sufficient for signing purposes. Tweakable hash functions enable us to tightly achieve TCR even in multi-target settings where an adversary can attack one out of many targets. Specifically, the property achieved in the following is _single-function multi-target collision resistance_ (SM-TCR) which is described more formally in {{BATCHSIGREV}}.
 
+### Tweakable Hash functions {#Preliminaries-tweakable-hashes}
+
 One form of keyed hash function is a tweakable hash function, which enables one to obtain SM-TCR:
 
  **Tweakable Hash functions** A _tweakable hash function_ is a tuple of algorithms 
@@ -214,7 +216,7 @@ We define a batch signature as a triple of algorithms
 
 Our construction relies on a Merkle tree. When addressing nodes in a Merkle tree of height _h_ with _N_ leaves, we may label nodes and leaves in the tree by their position: _n~i,k~_ is the _i_-th node at height _k_, counting from left to right and from bottom upwards (i.e.~leaves are on height _0_ and the root is on height _h_. We illustrate this in {{fig-merkle-tree}}.
 
-Let _Sig=(KeyGen, Sign, Verify)_ be a DSA as defined in \cref{def:digital-signature}, let _thash_ be a tweakable hash function as defined in \cref{def:tweakable-hash-function}. We define our batch signature scheme  _BSig = (KeyGen, BSign, BVerify_ with _KeyGen := Sig.KeyGen_ and _BSign, Verify_ as in \cref{alg:bsign,alg:bverify} respectively.
+Let _Sig=(KeyGen, Sign, Verify)_ be a DSA as defined in {{Preliminaries-signatures}}, let _thash_ be a tweakable hash function as defined in {{Preliminaries-tweakable-hashes}}. We define our batch signature scheme  _BSig = (KeyGen, BSign, BVerify_ with _KeyGen := Sig.KeyGen_ and _BSign, Verify_ as in {{construction-batch-signature-definition}} respectively.
 
 Here we describe the case of binary Merkle trees. In the case where _N_ is not a power of _2_, one can pad the tree by repeating leaves, or else continue with an incomplete tree.
 
