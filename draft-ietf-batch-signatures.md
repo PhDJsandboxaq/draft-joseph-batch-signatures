@@ -30,27 +30,70 @@ normative:
   TLS13: RFC8446
 
 informative:
-  AVIRAM:
-    target: https://mailarchive.ietf.org/arch/msg/tls/F4SVeL2xbGPaPB2GW_GkBbD_a5M/
-    title: "[TLS] Combining Secrets in Hybrid Key Exchange in TLS 1.3"
-    date: 2021-09-01
+  AES-NI:
+    target: https://www.intel.cn/content/dam/develop/external/us/en/documents/10tb24-breakthrough-aes-performance-with-intel-aes-new-instructions-final-secure-165940.pdf
+    title:"Breakthrough AES Performance with Intel AES New Instructions"
+    date: 2010
     author:
       -
-        ins: Nimrod Aviram
+        ins: Kahraman Akdemir
       -
-        ins: Benjamin Dowling
+        ins: Martin Dixon
       -
-        ins: Ilan Komargodski
+        ins: Wajdi Feghali
       -
-        ins: Kenny Paterson
+        ins: Patrick Fay
       -
-        ins: Eyal Ronen
+        ins: Vinodh Gopal
       -
-        ins: Eylon Yogev
-  BCNS15: DOI.10.1109/SP.2015.40
-  BERNSTEIN: DOI.10.1007/978-3-540-88702-7
-  BINDEL: DOI.10.1007/978-3-030-25510-7_12
-  CAMPAGNA: I-D.campagna-tls-bike-sike-hybrid
+        ins: Jim Guilford
+      -
+        ins: Erdincand Ozturk
+      -
+        ins: Gil Wolrich
+      -
+        ins: Ronen Zohar
+  GUE2012PARALLEL: DOI.10.1007/s13389-012-0037-z
+  SUPERCOP:
+    target: https://bench.cr.yp.to/supercop.html
+    title: SUPERCOP: System for unified performance evaluation related to cryptographic operations and primitives.
+    date: 2018
+    author:
+      -
+        ins: Daniel J. Bernstein
+      -
+        ins: Tanja Lange
+  CRYSTALS-DILITHIUM: DOI.10.46586/tches.v2018.i1.238-268
+  FALCON: DOI.10.6028/nist.fips.206
+  SPHINCS+: DOI.10.1145/3319535.3363229
+  NSM10:
+    target: https://www.whitehouse.gov/briefing-room/statements-releases/2022/05/04/national-security-memorandum-on-promoting-united-states-leadership-in-quantum-computing-while-mitigating-risks-to-vulnerable-cryptographic-systems/
+    title: "National Security Memorandum on Promoting United States Leadership in Quantum Computing While Mitigating Risks to Vulnerable Cryptographic Systems"
+    date: 2010-05-04
+    author:
+      -
+        ins: Shalanda D. Young
+  BATCHSIGREV:
+    target: https://eprint.iacr.org/2023/492
+    title: "Batch Signatures, Revisited"
+    date: 2023
+    author:
+      -
+        ins: Carlos Aguilar-Melchor
+      -
+        ins: Martin Albrecht
+      -
+        ins: Thomas Bailleux
+      -
+        ins: Nina Bindel
+      -
+        ins: James Howe
+      -
+        ins: Andreas Huelsing
+      -
+        ins: David Joseph
+      -
+        ins: Marc Manzano
   
 --- abstract
 
@@ -64,10 +107,10 @@ constructed from many messages.
 
 The computational complexity of unkeyed and symmetric cryptography is known 
 to be significantly lower than asymmetric cryptography. Indeed, hash functions, 
-stream or block ciphers typically require between a few cycles~\cite{aes-ni} to 
-a few hundred cycles~\cite{gueron2012parallelizing}, whereas key establishment 
+stream or block ciphers typically require between a few cycles {{AES-NI}} to 
+a few hundred cycles {{GUE2012PARALLEL}}, whereas key establishment 
 and digital signature primitives require between tens of thousands to hundreds 
-of millions of cycles~\cite{djb2018supercop}. In situations where a substantial 
+of millions of cycles {{SUPERCOP}}. In situations where a substantial 
 volume of signatures must be handled -- e.g.~a Hardware Security Module (HSM) 
 renewing a large set of short-lived certificates or a load balancer terminating 
 a large number of TLS connections per second -- this may pose serious limitations 
@@ -76,10 +119,10 @@ on scaling these and related scenarios.
 These challenges are amplified by upcoming public-key cryptography standards: in 
 July 2022, the US National Institute of Standards and Technology (NIST) announced 
 four algorithms for post-quantum cryptography (PQC) standardisation. In particular, 
-three digital signature algorithms -- Dilithium~\cite{NISTPQC:CRYSTALS-DILITHIUM22}, 
-Falcon~\cite{NISTPQC:FALCON22} and SPHINCS_^+_~\cite{NISTPQC:SPHINCS+22} -- were 
+three digital signature algorithms -- Dilithium {{CRYSTALS-DILITHIUM}}, 
+Falcon {{FALCON}} and SPHINCS+ {{SPHINCS+}} -- were 
 selected, and migration from current standards to these new algorithms is already 
-underway~\cite{nsm_10}. One of the key issues when considering migrating to PQC is 
+underway {{NSM10}}. One of the key issues when considering migrating to PQC is 
 that the computational costs of the new digital signature algorithms are significantly 
 higher than those of ECDSA\@; the fastest currently-deployed primitive for signing. 
 This severely impacts the ability of systems to scale and inhibits their migration 
@@ -115,7 +158,7 @@ settings where an adversary wins when they manage to attack one out of many targ
 * Second preimage resistance - given an input _x^1^_, it should be difficult to find another distinct input _x^2^_ such that _H(x^1^)=H(x^2^)_.
 * Target collision resistance - choose input _x^1^_. Then given a key _v_, find _x^2^_ such that _H~v~(x^1^) = H~v~(x^2^)_.
 
-Target collision resistance is a weaker requirement than collision resistance but is sufficient for signing purposes. Tweakable hash functions enable us to tightly achieve TCR even in multi-target settings where an adversary can attack one out of many targets. Specifically, the property achieved in the following is _single-function multi-target collision resistance_ (SM-TCR) which is described more formally in \cite{out paper}.
+Target collision resistance is a weaker requirement than collision resistance but is sufficient for signing purposes. Tweakable hash functions enable us to tightly achieve TCR even in multi-target settings where an adversary can attack one out of many targets. Specifically, the property achieved in the following is _single-function multi-target collision resistance_ (SM-TCR) which is described more formally in {{BATCHSIGREV}}.
 
 One form of keyed hash function is a tweakable hash function, which enables one to obtain SM-TCR:
 
@@ -150,7 +193,7 @@ as well as the sibling path of the individual message. We discuss the applicabil
 of such signatures to various protocols, but only at a high level. The document describes 
 a scheme which enables smaller signatures than outlined in {{Ben20}} by relying not 
 on hash collision resistance, but instead on target collision resistance, however for 
-the security proofs the reader should see \cite{original paper!}.
+the security proofs the reader should see {{BATCHSIGREV}}.
 
 # Batch signature construction {#construction}           
 
