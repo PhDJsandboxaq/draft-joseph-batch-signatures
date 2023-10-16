@@ -212,7 +212,7 @@ We define a batch signature as a triple of algorithms
 
 ## Merkle tree batch signature
 
-Our construction relies on a Merkle tree. When addressing nodes in a Merkle tree of height _h_ with _N_ leaves, we may label nodes and leaves in the tree by their position: _n~i,k~_ is the _i_-th node at height _k_, counting from left to right and from bottom upwards (i.e.~leaves are on height _0_ and the root is on height _h_. We illustrate this in \cref{fig:merkle-tree}.
+Our construction relies on a Merkle tree. When addressing nodes in a Merkle tree of height _h_ with _N_ leaves, we may label nodes and leaves in the tree by their position: _n~i,k~_ is the _i_-th node at height _k_, counting from left to right and from bottom upwards (i.e.~leaves are on height _0_ and the root is on height _h_. We illustrate this in {{fig-merkle-tree}}.
 
 Let _Sig=(KeyGen, Sign, Verify)_ be a DSA as defined in \cref{def:digital-signature}, let _thash_ be a tweakable hash function as defined in \cref{def:tweakable-hash-function}. We define our batch signature scheme  _BSig = (KeyGen, BSign, BVerify_ with _KeyGen := Sig.KeyGen_ and _BSign, Verify_ as in \cref{alg:bsign,alg:bverify} respectively.
 
@@ -258,6 +258,7 @@ _BSign(sk, M=\[msg~0~,...,msg~N-1~\])_ where _N=2^n^_. We first treat the case t
      H(_) ... H(id,0,3,r3,msg3)  ...H(_)
 
 ```
+{: #fig-merkle-tree title="Merkle tree batch signature construction"}
 
 ## Verification {#construction-verification}
 
