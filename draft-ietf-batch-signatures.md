@@ -160,7 +160,11 @@ the key or public parameter serves as a separator between users). Tweakable hash
 functions allow us to tightly achieve target collision resistance even in multi-target
 settings where an adversary wins when they manage to attack one out of many targets.
 ```
-**Keyed Hash function** A keyed hash function is one that outputs a hash that depends both on a message _msg_ and a key _v_ that is shared by both the hash generator and the hash validator. It is easiest to compute via prepending the key to the message before computing the hash _h <-- H(v | msg)_. Let _Hv_ denote the family of hash functions keyed with _v_.
+**Keyed Hash function** A keyed hash function is one that outputs a hash that depends
+both on a message _msg_ and a key _v_ that is shared by both the hash generator and the
+hash validator. It is easiest to compute via prepending the key to the message before
+computing the hash _h <-- H(v | msg)_. Let _Hv_ denote the family of hash functions
+keyed with _v_.
 ```
 ### Hash function properties {#Preliminaries-hash-properties}
 
