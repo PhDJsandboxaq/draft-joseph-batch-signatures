@@ -236,30 +236,24 @@ _BSign(sk, M=\[msg-0,...,msg-N-1\])_ where _N=2^n_. We first treat the case that
 - **Backwards compatibility:** Clients and servers who are "hybrid-aware", i.e., compliant with whatever hybrid key exchange standard is developed for TLS, should remain compatible with endpoints and middle-boxes that are not hybrid-aware.  The three scenarios to consider are:
     1. Hybrid-aware client, hybrid-aware server: These parties should establish a hybrid shared secret.
 
-<!-- TODO There is an error in this list, most likely with point 4 and its subpoints. -->
-```
-- **Tree construction** We compute the Merkle tree via the following series of steps:
-    1. **Initialize tree** _T\[\]_, which is indexed by the level, and then the row index, e.g. _T\[3,5\]_ is the fifth node on level _3_ of _T_. Height _h <-- log2(N)_
-    2. **Tree identifier** Sample a tree identifier _id <--$ \{0,1\}^k_
-    3. **Generate leaves** For leaf _i in \[0,...,N-1\]_, sample randomness _r-i <--$ \{0,1\}^k_. Then set _T\[0,i\]=H(id | 0 | i | r-i | msg-i)_
-    4. **Populate tree** For levels _l in \[1,..., h\]_ compute level _l_ from level _l-1_ as follows:
-        * Initialize level _l_ with half as many elements as level _l-1_.
-        * For node _j_ on level _l_, set _left=T\[l-1, 2j\]_ and _right=T\[l-1, 2j+1\]_
-        * _id_ is the public parameter, _(1, l, j)_ is the tweak.
-        * _T[l, j] <-- H(id | 1 | l | j | left | right)_
-    5. **Root** set _root <-- T\[h,0\]_
-```
+- **Initialize tree** _T\[\]_, which is indexed by the level, and then the row index, e.g. _T\[3,5\]_ is the fifth node on level _3_ of _T_. Height _h <-- log2(N)_
+- **Tree identifier** Sample a tree identifier _id <--$ \{0,1\}^k_
+- **Generate leaves** For leaf _i in \[0,...,N-1\]_, sample randomness _r-i <--$ \{0,1\}^k_. Then set _T\[0,i\]=H(id | 0 | i | r-i | msg-i)_
+- **Populate tree** For levels _l in \[1,..., h\]_ compute level _l_ from level _l-1_ as follows:
+    1. Initialize level _l_ with half as many elements as level _l-1_.
+    2. For node _j_ on level _l_, set _left=T\[l-1, 2j\]_ and _right=T\[l-1, 2j+1\]_
+    3. _id_ is the public parameter, _(1, l, j)_ is the tweak.
+    4. _T[l, j] <-- H(id | 1 | l | j | left | right)_
+- **Root** set _root <-- T\[h,0\]_
 
 ### Signature construction {#construction-signature}
-<!-- TODO There is an error in this list, most likely with point 4 and its subpoints. -->
-```
-1. **Sign the root** Use the base DSA to sign the root of the Merkle tree _rootsig <-- Sign(sk, id, root, N)_
-2. **Sibling path** For each leaf: The sibling path is an array of _h-1_ hashes. Compute the sibling path as follows:
-* Initialize _path-i <-- \[\]_
-* For _l in \[0, ..., N-1\]_, set _j <--floor(i / 2^l)_. If _j mod 2 = 0_ then _path-i\[l\]=T\[l,j+1\]_, else _path-i\[l\]=T\[l,j-1\]_
-3. **Generate batch signatures** _bsig-i <-- (id, N, sig, i, r-i, path-i)_
-4. **Return batch of signatures** batch signatures are \{bsig-1, ..., bsig-N\}
-```
+
+- **Sign the root** Use the base DSA to sign the root of the Merkle tree _rootsig <-- Sign(sk, id, root, N)_
+- **Sibling path** For each leaf: The sibling path is an array of _h-1_ hashes. Compute the sibling path as follows:
+    * Initialize _path-i <-- \[\]_
+    * For _l in \[0, ..., N-1\]_, set _j <--floor(i / 2^l)_. If _j mod 2 = 0_ then _path-i\[l\]=T\[l,j+1\]_, else _path-i\[l\]=T\[l,j-1\]_
+- **Generate batch signatures** _bsig-i <-- (id, N, sig, i, r-i, path-i)_
+- **Return batch of signatures** batch signatures are \{bsig-1, ..., bsig-N\}
 
 ~~~
 
