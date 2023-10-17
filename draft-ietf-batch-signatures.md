@@ -159,13 +159,13 @@ that take an additional input which can be thought of as a domain separator (whi
 the key or public parameter serves as a separator between users). Tweakable hash
 functions allow us to tightly achieve target collision resistance even in multi-target
 settings where an adversary wins when they manage to attack one out of many targets.
-```
-**Keyed Hash function** A keyed hash function is one that outputs a hash that depends
+
+- **Keyed Hash function** A keyed hash function is one that outputs a hash that depends
 both on a message _msg_ and a key _v_ that is shared by both the hash generator and the
 hash validator. It is easiest to compute via prepending the key to the message before
 computing the hash _h <-- H(v | msg)_. Let _Hv_ denote the family of hash functions
 keyed with _v_.
-```
+
 ### Hash function properties {#Preliminaries-hash-properties}
 
 * Collision resistance - no two inputs _x1, x2_ should map to the same output hash (regardless of choice of key in the case of a keyed hash).
@@ -179,10 +179,10 @@ Target collision resistance is a weaker requirement than collision resistance bu
 
 One form of keyed hash function is a tweakable hash function, which enables one to obtain SM-TCR:
 
- **Tweakable Hash functions** A _tweakable hash function_ is a tuple of algorithms _H=(KeyGen, Eval)_ such that:
- - _KeyGen_ takes the security parameter _k_ and outputs a (possibly empty) public
+ - **Tweakable Hash functions** A _tweakable hash function_ is a tuple of algorithms _H=(KeyGen, Eval)_ such that:
+     - _KeyGen_ takes the security parameter _k_ and outputs a (possibly empty) public
    parameter _p_. We write _p <-- KeyGen(k)_.
- - _Eval_ is deterministic and takes public parameters _p_, a tweak _t_, an input _msg_
+     - _Eval_ is deterministic and takes public parameters _p_, a tweak _t_, an input _msg_
    in _\[0,1\]^m_ and returns a hash value _h_. We write _h <-- Eval(p,t,msg)_ or
    simply _h <-- H(p,t,msg)_.
 
