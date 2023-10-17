@@ -233,7 +233,7 @@ _BSign(sk, M=\[msg-0,...,msg-N-1\])_ where _N=2^n_. We first treat the case that
 
 ### Tree computation {#construction-tree}
 
-- **Tree construction** We compute the Merkle tree via the following steps:
+- **Tree construction** We compute the Merkle tree via the following series of steps:
     1. **Initialize tree** _T\[\]_, which is indexed by the level, and then the row index, e.g. _T\[3,5\]_ is the fifth node on level _3_ of _T_. Height _h <-- log2(N)_
     2. **Tree identifier** Sample a tree identifier _id <--$ \{0,1\}^k_
     3. **Generate leaves** For leaf _i in \[0,...,N-1\]_, sample randomness _r-i <--$ \{0,1\}^k_. Then set _T\[0,i\]=H(id | 0 | i | r-i | msg-i)_
