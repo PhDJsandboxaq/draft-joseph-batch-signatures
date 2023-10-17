@@ -67,7 +67,7 @@ informative:
   GUE2012PARALLEL: DOI.10.1007/s13389-012-0037-z
   SUPERCOP:
     target: https://bench.cr.yp.to/supercop.html
-    title: System for unified performance evaluation related to cryptographic operations and primitives.
+    title: "SUPERCOP: System for unified performance evaluation related to cryptographic operations and primitives."
     date: 2018
     author:
       -
