@@ -20,8 +20,8 @@ author:
     organization: SandboxAQ
     email: dj@sandboxaq.com
   -
-    ins: D. Connelly
-    name: Deirdre Connelly
+    ins: D. Connolly
+    name: Deirdre Connolly
     organization: SandboxAQ
     email: deirdre.connolly@sandboxquantum.com
   -
