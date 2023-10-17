@@ -232,7 +232,8 @@ Here we describe the case of binary Merkle trees. In the case where _N_ is not a
 _BSign(sk, M=\[msg-0,...,msg-N-1\])_ where _N=2^n_. We first treat the case that _N_ is a power of _2_, and then consider incomplete trees using standard methods.
 
 ### Tree computation {#construction-tree}
-
+<!-- TODO There is an error in this list, most likely with point 4 and its subpoints. -->
+```
 - **Tree construction** We compute the Merkle tree via the following series of steps:
     1. **Initialize tree** _T\[\]_, which is indexed by the level, and then the row index, e.g. _T\[3,5\]_ is the fifth node on level _3_ of _T_. Height _h <-- log2(N)_
     2. **Tree identifier** Sample a tree identifier _id <--$ \{0,1\}^k_
@@ -243,6 +244,7 @@ _BSign(sk, M=\[msg-0,...,msg-N-1\])_ where _N=2^n_. We first treat the case that
         * _id_ is the public parameter, _(1, l, j)_ is the tweak.
         * _T[l, j] <-- H(id | 1 | l | j | left | right)_
     5. **Root** set _root <-- T\[h,0\]_
+```
 
 ### Signature construction {#construction-signature}
 <!-- TODO There is an error in this list, most likely with point 4 and its subpoints. -->
