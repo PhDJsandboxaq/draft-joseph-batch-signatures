@@ -1,7 +1,7 @@
 ---
-title: TurboTLS for faster connection establishment
-abbrev: ietf-turbotls-design
-docname: draft-ietf-turbotls-design-latest
+title: Batched Signatures
+abbrev: ietf-batched-signatures
+docname: draft-ietf-batch-signatures-latest
 date: 2023-09-05
 category: info
 
@@ -29,7 +29,6 @@ author:
     name: Carlos Aguilar-Melchor
     organization: SandboxAQ
     email: carlos.aguilar@sandboxaq.com
-  -
 
 normative:
   TLS13: RFC8446
@@ -58,10 +57,17 @@ informative:
         ins: Gil Wolrich
       -
         ins: Ronen Zohar
+  BEN20:
+    target: TODO
+    title: TODO
+    date: 2023
+    author:
+      -
+        ins: DAVID FIX THIS REFERENCE
   GUE2012PARALLEL: DOI.10.1007/s13389-012-0037-z
   SUPERCOP:
     target: https://bench.cr.yp.to/supercop.html
-    title: SUPERCOP: System for unified performance evaluation related to cryptographic operations and primitives.
+    title: System for unified performance evaluation related to cryptographic operations and primitives.
     date: 2018
     author:
       -
@@ -99,38 +105,38 @@ informative:
         ins: David Joseph
       -
         ins: Marc Manzano
-  
+
 --- abstract
 
-This document proposes a construction for batch signatures where a single, 
-potentially expensive, "inner" digital signature authenticates a Merkle tree 
+This document proposes a construction for batch signatures where a single,
+potentially expensive, "inner" digital signature authenticates a Merkle tree
 constructed from many messages.
 
 --- middle
 
 # Introduction {#introduction}
 
-The computational complexity of unkeyed and symmetric cryptography is known 
-to be significantly lower than asymmetric cryptography. Indeed, hash functions, 
-stream or block ciphers typically require between a few cycles {{AES-NI}} to 
-a few hundred cycles {{GUE2012PARALLEL}}, whereas key establishment 
-and digital signature primitives require between tens of thousands to hundreds 
-of millions of cycles {{SUPERCOP}}. In situations where a substantial 
-volume of signatures must be handled -- e.g. a Hardware Security Module (HSM) 
-renewing a large set of short-lived certificates or a load balancer terminating 
-a large number of TLS connections per second -- this may pose serious limitations 
+The computational complexity of unkeyed and symmetric cryptography is known
+to be significantly lower than asymmetric cryptography. Indeed, hash functions,
+stream or block ciphers typically require between a few cycles {{AES-NI}} to
+a few hundred cycles {{GUE2012PARALLEL}}, whereas key establishment
+and digital signature primitives require between tens of thousands to hundreds
+of millions of cycles {{SUPERCOP}}. In situations where a substantial
+volume of signatures must be handled -- e.g. a Hardware Security Module (HSM)
+renewing a large set of short-lived certificates or a load balancer terminating
+a large number of TLS connections per second -- this may pose serious limitations
 on scaling these and related scenarios.
 
-These challenges are amplified by upcoming public-key cryptography standards: in 
-July 2022, the US National Institute of Standards and Technology (NIST) announced 
-four algorithms for post-quantum cryptography (PQC) standardisation. In particular, 
-three digital signature algorithms -- Dilithium {{CRYSTALS-DILITHIUM}}, 
-Falcon {{FALCON}} and SPHINCS+ {{SPHINCS+}} -- were 
-selected, and migration from current standards to these new algorithms is already 
-underway {{NSM10}}. One of the key issues when considering migrating to PQC is 
-that the computational costs of the new digital signature algorithms are significantly 
-higher than those of ECDSA\@; the fastest currently-deployed primitive for signing. 
-This severely impacts the ability of systems to scale and inhibits their migration 
+These challenges are amplified by upcoming public-key cryptography standards: in
+July 2022, the US National Institute of Standards and Technology (NIST) announced
+four algorithms for post-quantum cryptography (PQC) standardisation. In particular,
+three digital signature algorithms -- Dilithium {{CRYSTALS-DILITHIUM}},
+Falcon {{FALCON}} and SPHINCS+ {{SPHINCS+}} -- were
+selected, and migration from current standards to these new algorithms is already
+underway {{NSM10}}. One of the key issues when considering migrating to PQC is
+that the computational costs of the new digital signature algorithms are significantly
+higher than those of ECDSA\@; the fastest currently-deployed primitive for signing.
+This severely impacts the ability of systems to scale and inhibits their migration
 to PQC, especially in higher-throughput settings.
 
 
@@ -148,14 +154,14 @@ to PQC, especially in higher-throughput settings.
 
 ## Hash functions {#Preliminaries-hashes}
 
-In this work we consider _tweakable_ hash functions. These are keyed hash functions 
-that take an additional input which can be thought of as a domain separator (while 
-the key or public parameter serves as a separator between users). Tweakable hash 
-functions allow us to tightly achieve target collision resistance even in multi-target 
+In this work we consider _tweakable_ hash functions. These are keyed hash functions
+that take an additional input which can be thought of as a domain separator (while
+the key or public parameter serves as a separator between users). Tweakable hash
+functions allow us to tightly achieve target collision resistance even in multi-target
 settings where an adversary wins when they manage to attack one out of many targets.
-
+```
 **Keyed Hash function** A keyed hash function is one that outputs a hash that depends both on a message _msg_ and a key _v_ that is shared by both the hash generator and the hash validator. It is easiest to compute via prepending the key to the message before computing the hash _h <-- H(v | msg)_. Let _Hv_ denote the family of hash functions keyed with _v_.
-
+```
 ### Hash function properties {#Preliminaries-hash-properties}
 
 * Collision resistance - no two inputs _x1, x2_ should map to the same output hash (regardless of choice of key in the case of a keyed hash).
@@ -179,24 +185,24 @@ One form of keyed hash function is a tweakable hash function, which enables one 
 
 ## Motivation for batching messages before signing {#motivation}
 
-Batch signing enables the scaling of slow algorithms by signing large batches of 
-messages simultaneously. This comes at a relatively low latency cost, and significant 
-throughput improvements. These advantages are particularly pertinent when considering 
-the use of post-quantum signatures, such as those being standardised by NIST at 
-the time of writing. In some applications, the amount of data that needs to be sent 
-can be reduced in addition; namely, if a given entity (is aware that it) receives 
-multiple signatures from the same batch. In this case, sending the signed root 
-multiple times is redundant and we can asymptotically reduce the amount of 
+Batch signing enables the scaling of slow algorithms by signing large batches of
+messages simultaneously. This comes at a relatively low latency cost, and significant
+throughput improvements. These advantages are particularly pertinent when considering
+the use of post-quantum signatures, such as those being standardised by NIST at
+the time of writing. In some applications, the amount of data that needs to be sent
+can be reduced in addition; namely, if a given entity (is aware that it) receives
+multiple signatures from the same batch. In this case, sending the signed root
+multiple times is redundant and we can asymptotically reduce the amount of
 received information to a few hashes per message.
 
 ## Scope {#scope}
 
-This document describes a construction for batch signatures based upon a Merkle tree 
-design. The total signature consists of a signature of the root of the Merkle tree, 
-as well as the sibling path of the individual message. We discuss the applicability 
-of such signatures to various protocols, but only at a high level. The document describes 
-a scheme which enables smaller signatures than outlined in {{Ben20}} by relying not 
-on hash collision resistance, but instead on target collision resistance, however for 
+This document describes a construction for batch signatures based upon a Merkle tree
+design. The total signature consists of a signature of the root of the Merkle tree,
+as well as the sibling path of the individual message. We discuss the applicability
+of such signatures to various protocols, but only at a high level. The document describes
+a scheme which enables smaller signatures than outlined in {{BEN20}} by relying not
+on hash collision resistance, but instead on target collision resistance, however for
 the security proofs the reader should see {{BATCHSIGREV}}.
 
 # Batch signature construction {#construction}
@@ -222,7 +228,8 @@ Here we describe the case of binary Merkle trees. In the case where _N_ is not a
 _BSign(sk, M=\[msg-0,...,msg-N-1\])_ where _N=2^n_. We first treat the case that _N_ is a power of _2_, and then consider incomplete trees using standard methods.
 
 ### Tree computation {#construction-tree}
-
+<!-- TODO There is an error in this list, most likely with point 4 and its subpoints. -->
+```
 1. **Initialize tree** _T\[\]_, which is indexed by the level, and then the row index, e.g. _T\[3,5\]_ is the fifth node on level _3_ of _T_. Height _h <-- log2(N)_
 2. **Tree identifier** Sample a tree identifier _id <--$ \{0,1\}^k_
 3. **Generate leaves** For leaf _i in \[0,...,N-1\]_, sample randomness _r-i <--$ \{0,1\}^k_. Then set _T\[0,i\]=H(id | 0 | i | r-i | msg-i)_
@@ -232,16 +239,20 @@ _BSign(sk, M=\[msg-0,...,msg-N-1\])_ where _N=2^n_. We first treat the case that
 * _id_ is the public parameter, _(1, l, j)_ is the tweak.
 * _T[l, j] <-- H(id | 1 | l | j | left | right)_
 5. **Root** set _root <-- T\[h,0\]_
+```
 
 ### Signature construction {#construction-signature}
+<!-- TODO There is an error in this list, most likely with point 4 and its subpoints. -->
+```
 1. **Sign the root** Use the base DSA to sign the root of the Merkle tree _rootsig <-- Sign(sk, id, root, N)_
 2. **Sibling path** For each leaf: The sibling path is an array of _h-1_ hashes. Compute the sibling path as follows:
 * Initialize _path-i <-- \[\]_
 * For _l in \[0, ..., N-1\]_, set _j <--floor(i / 2^l)_. If _j mod 2 = 0_ then _path-i\[l\]=T\[l,j+1\]_, else _path-i\[l\]=T\[l,j-1\]_
 3. **Generate batch signatures** _bsig-i <-- (id, N, sig, i, r-i, path-i)_
 4. **Return batch of signatures** batch signatures are \{bsig-1, ..., bsig-N\}
-
 ```
+
+~~~
 
   lvl3=root         (T30)--DSA--> sig
                      / \
@@ -256,19 +267,21 @@ _BSign(sk, M=\[msg-0,...,msg-N-1\])_ where _N=2^n_. We first treat the case that
        |            |               |
      H(_) ... H(id,0,3,r3,msg3)  ...H(_)
 
-```
+~~~
 {: #fig-merkle-tree title="Merkle tree batch signature construction"}
 
 ## Verification {#construction-verification}
 
 Verification proceeds by first reconstructing the root hash via the leaf information (public parameters, tweak, message) and iteravely hashing with the nodes provided in the sibling path. Next the base verification algorithm is called to verify the base DSA signature of the root.
 
+<!-- TODO there is an error with point 2 and most likely its subpoints. -->
+```
 1. **Generate leaf hash** Get hash from public parameter, tweak, and message _h <-- H(id | 0 | i | r | msg)_.
 2. **Reconstruct root** Set _l=0_. For _l in \[ 1,...,h\]_ set _j <-- floor(i / 2^l)_.
 * If _j mod 2 = 0_: set _h <-- H(id | 1 | l | j | h | path\[l\])_
 * If _j mod 2 = 1_: set _h <-- H(id | 1 | l | j | path\[l\] | h)_
 3. **Verify root** Return _Verify(pk, sig, h)
-
+```
 # Discussion {#discussion}
 
 <!-- Hybrid?  Can just do any other hybrid construction scheme, have BSign just call that internally as S.Sign, and S.Verify. We should consider the separability concerns etc though. -->
@@ -280,13 +293,13 @@ Verification proceeds by first reconstructing the root hash via the leaf informa
 
 # Security Considerations {#security-considerations}
 
-A reduction in certificate sizes is proposed by a new type of 
-CA (certificate authority) which would exclusively sign a new type 
-of batch oriented certificates.  Such a CA would only be used together 
-with a Certificate Transparency log, which changes the usual required 
-flows for authentication. The benefits obtained in certificate size and 
-verification/signature costs are significant. It also implies that the 
-main criterion for being on a same batch are: being signed by the same CA, 
+A reduction in certificate sizes is proposed by a new type of
+CA (certificate authority) which would exclusively sign a new type
+of batch oriented certificates.  Such a CA would only be used together
+with a Certificate Transparency log, which changes the usual required
+flows for authentication. The benefits obtained in certificate size and
+verification/signature costs are significant. It also implies that the
+main criterion for being on a same batch are: being signed by the same CA,
 and being signed roughly at the same time.
 
 ## Correctness {#correctness}
