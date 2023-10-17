@@ -232,6 +232,10 @@ Here we describe the case of binary Merkle trees. In the case where _N_ is not a
 _BSign(sk, M=\[msg-0,...,msg-N-1\])_ where _N=2^n_. We first treat the case that _N_ is a power of _2_, and then consider incomplete trees using standard methods.
 
 ### Tree computation {#construction-tree}
+
+- **Backwards compatibility:** Clients and servers who are "hybrid-aware", i.e., compliant with whatever hybrid key exchange standard is developed for TLS, should remain compatible with endpoints and middle-boxes that are not hybrid-aware.  The three scenarios to consider are:
+    1. Hybrid-aware client, hybrid-aware server: These parties should establish a hybrid shared secret.
+
 <!-- TODO There is an error in this list, most likely with point 4 and its subpoints. -->
 ```
 - **Tree construction** We compute the Merkle tree via the following series of steps:
