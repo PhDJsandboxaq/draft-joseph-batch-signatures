@@ -289,16 +289,15 @@ verification/signature costs are significant. It also implies that the
 main criterion for being on a same batch are: being signed by the same CA, 
 and being signed roughly at the same time.
 
-## Correctness
+## Correctness {#correctness}
 
-## Domain separation
+## Domain separation {#dom-sep}
 
-## Target collision resistance vs collision resistance
+## Target collision resistance vs collision resistance {#tcr-vs-cr}
 
-## Privacy
+## Privacy {#privacy}
 
-# Acknowledgements
-
+# Acknowledgements {#acknowledgements}
 
 
 --- back
