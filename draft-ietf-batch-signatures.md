@@ -189,8 +189,6 @@ multiple signatures from the same batch. In this case, sending the signed root
 multiple times is redundant and we can asymptotically reduce the amount of 
 received information to a few hashes per message.
 
-<!-- What about producing a small signature for many messages, indepenent of algorithm speed? -->
-
 ## Scope {#scope}
 
 This document describes a construction for batch signatures based upon a Merkle tree 
@@ -211,7 +209,7 @@ We define a batch signature as a triple of algorithms
   - _BSign(sk, M)_ the batch signing algorithm takes as input a list of messages _M = {msg-i}_ and outputs a list of signatures _S=\{sig-i\}_. We write _S <-- BSign(sk,M)_
   - _PVerify(pk, sig, msg)_ The verification algorithm takes as input a verification key _pk_, a signature _sig_ and a message _msg_ and outputs a bit _b_, with _b=1_ meaning the signature is valid and _b=0_ meaning the signature is invalid. _PVerify_ is a deterministic algorithm. We write _b <-- PVerify(pk, sig, msg)_. We call the verification _PVerify_ to represent Path Verification, because in the construction outlined below, verification involves an extra step of verifying a sibling path, which _Verify_ in the ordinary DSA setting does not do.
 
-## Merkle tree batch signature
+## Merkle tree batch signature {#construction-merkle-tree}
 
 Our construction relies on a Merkle tree. When addressing nodes in a Merkle tree of height _h_ with _N_ leaves, we may label nodes and leaves in the tree by their position: _T\[i,k\]_ is the _i_-th node at height _k_, counting from left to right and from bottom upwards (i.e. leaves are on height _0_ and the root is on height _h_. We illustrate this in {{fig-merkle-tree}}.
 
