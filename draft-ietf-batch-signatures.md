@@ -240,6 +240,8 @@ _BSign(sk, M=\[msg-0,...,msg-N-1\])_ where _N=2^n_. We first treat the case that
 <!-- TODO there is an error with point 2 and most likely its subpoints. -->
 ```
 ```
+Try this
+
 - **Initialize tree** _T[]_, which is indexed by the level, and then the row index, e.g. _T[3,5]_ is the fifth node on level _3_ of _T_. Height _h <-- log2(N)_
 - **Tree identifier** Sample a tree identifier _id <--$ {0,1}^k_
 - **Generate leaves** For leaf _i in [0,...,N-1]_, sample randomness _r-i <--$ {0,1}^k_. Then set _T[0,i]=H(id | 0 | i | r-i | msg-i)_
