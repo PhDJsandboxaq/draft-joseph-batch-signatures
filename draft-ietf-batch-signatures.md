@@ -235,6 +235,8 @@ _BSign(sk, M=\[msg-0,...,msg-N-1\])_ where _N=2^n_. We first treat the case that
 
 - **Backwards compatibility:** Clients and servers who are "hybrid-aware", i.e., compliant with whatever hybrid key exchange standard is developed for TLS, should remain compatible with endpoints and middle-boxes that are not hybrid-aware.  The three scenarios to consider are:
     1. Hybrid-aware client, hybrid-aware server: These parties should establish a hybrid shared secret.
+ 
+
 <!-- TODO there is an error with point 2 and most likely its subpoints. -->
 ```
 - **Initialize tree** _T[]_, which is indexed by the level, and then the row index, e.g. _T[3,5]_ is the fifth node on level _3_ of _T_. Height _h <-- log2(N)_
