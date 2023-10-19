@@ -238,7 +238,7 @@ _BSign(sk, M=\[msg-0,...,msg-N-1\])_ where _N=2^n_. We first treat the case that
 
 Try this
 
-- **Initialize tree** T[ ], which is indexed by the level, and then the row index, e.g. T[3,5] is the fifth node on level 3 of T. Height h <-- log2(N)
+- **Initialize tree** _T[ ]_, which is indexed by the level, and then the row index, e.g. _T[3,5]_ is the fifth node on level 3 of _T_. Height _h <-- log2(N)_
 
 ```
 - **Tree identifier** Sample a tree identifier id <--$ {0,1}^k
