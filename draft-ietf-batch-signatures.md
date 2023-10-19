@@ -278,7 +278,7 @@ Verification proceeds by first reconstructing the root hash via the leaf informa
 - **Reconstruct root** Set _l=0_. For _l in [ 1, ..., h]_ set _j <-- floor(i/2^l)_.
   - If _j mod 2 = 0_: set _h <-- H(id, 1, l, j, h, path[l])_.
   - If _j mod 2 = 1_: set _h <-- H(id, 1, l, j, path[l], h)_.
-- **Verify root** Return _Verify(pk, sig, h).
+- **Verify root** Return _Verify(pk, sig, h)_.
   
 # Discussion {#discussion}
 
