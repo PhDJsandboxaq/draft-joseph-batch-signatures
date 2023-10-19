@@ -233,15 +233,15 @@ _BSign(sk, M=\[msg-0,...,msg-N-1\])_ where _N=2^n_. We first treat the case that
 
 ### Tree computation {#construction-tree}
 
-- **Initialize tree** _T[ ]_, which is indexed by the level, and then the row index, e.g. _T[3,5]_ is the fifth node on level 3 of _T_. Height _h <-- log2(N)_
-- **Tree identifier** Sample a tree identifier _id <--$ {0,1}^k_
-- **Generate leaves** For leaf _i in [0,...,N-1]_, sample randomness _r-i <--$ {0,1}^k_. Then set _T[0,i] = H(id, 0, i, r-i, msg-i)._
-- **Populate tree** For levels _l in [1,..., h]_ compute level _l_ from level _l-1_ as follows:
-- - Initialize level _l_ with half as many elements as level _l-1_.
+1. **Initialize tree** _T[ ]_, which is indexed by the level, and then the row index, e.g. _T[3,5]_ is the fifth node on level 3 of _T_. Height _h <-- log2(N)_
+2. **Tree identifier** Sample a tree identifier _id <--$ {0,1}^k_
+3. **Generate leaves** For leaf _i in [0,...,N-1]_, sample randomness _r-i <--$ {0,1}^k_. Then set _T[0,i] = H(id, 0, i, r-i, msg-i)._
+4. **Populate tree** For levels _l in [1,..., h]_ compute level _l_ from level _l-1_ as follows:
+5. - Initialize level _l_ with half as many elements as level _l-1_.
   - For node _j_ on level _l_, set _left=T[l-1, 2j]_ and _right=T[l-1, 2j+1]_
   - _id_ is the public parameter, _(1, l, j)_ is the tweak.
   - _T[l, j] <-- H(id, 1, l, j, left, right)_
-- **Root** set _root <-- T[h,0]_
+6. **Root** set _root <-- T[h,0]_
 
 ### Signature construction {#construction-signature}
 
