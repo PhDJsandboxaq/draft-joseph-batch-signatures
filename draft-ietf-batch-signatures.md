@@ -235,12 +235,11 @@ _BSign(sk, M=\[msg-0,...,msg-N-1\])_ where _N=2^n_. We first treat the case that
 
 - **Backwards compatibility:** Clients and servers who are "hybrid-aware", i.e., compliant with whatever hybrid key exchange standard is developed for TLS, should remain compatible with endpoints and middle-boxes that are not hybrid-aware.  The three scenarios to consider are:
     1. Hybrid-aware client, hybrid-aware server: These parties should establish a hybrid shared secret.
- 
 
 Try this
 
-- **Initialize tree** T[], which is indexed by the level, and then the row index, e.g. T[3,5] is the fifth node on level 3 of T. Height h <-- log2(N)
 ```
+- **Initialize tree** T[], which is indexed by the level, and then the row index, e.g. T[3,5] is the fifth node on level 3 of T. Height h <-- log2(N)
 - **Tree identifier** Sample a tree identifier id <--$ {0,1}^k
 - **Generate leaves** For leaf _i in [0,...,N-1]_, sample randomness _r-i <--$ {0,1}^k_. Then set _T[0,i]=H(id | 0 | i | r-i | msg-i)_
 - **Populate tree** For levels _l in [1,..., h]_ compute level _l_ from level _l-1_ as follows:
