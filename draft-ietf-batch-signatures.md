@@ -304,7 +304,30 @@ and being signed roughly at the same time.
 
 ## Domain separation {#dom-sep}
 
+Our construction uses tweakable hashfunctions which take as input a public parameter _id_, a tweak _t_, and a message _msg_. The public parameter domain separates between Merkle trees used in the same protocol. In {{BEN20}} it is suggested that TLS context strings are used to prevent cross-protocol attacks, however we note here that _msg_, which is the full protocol transcript up to that point, includes such protocol context strings. Therefore domain separation is handled implicitly. However in an idea world all protocols would agree on a uniform approach to domain separation, and so we invite comment on how to concretely handle this aspect.
+
 ## Target collision resistance vs collision resistance {#tcr-vs-cr}
+
+# Signature sizes {#signature-sizes}
+
+In table {{Table1}} one can see the size of a batch signature which signs 16 or 32 transcripts, relative to the size of the underlying primitive. For post-quantum schemes the overhead in size is relatively small due to the much larger sizes of the base DSAs.
+
+~~~
++--------------------+-----+------+-------+----+--------+
+|       Scheme       |  k  | |vk| | |sig| | N  | |bsig| |
++--------------------+-----+------+-------+----+--------+
+| ECDSA P256         | 128 |   64 |    64 | 32 |    180 |
+| Dilithium2         | 128 | 1312 |  2420 | 32 |   2536 |
+| Dilithium5         | 256 | 2592 |  4595 | 32 |   4823 |
+| Falcon-512         | 128 |  897 |   666 | 16 |    766 |
+| Falcon-1024        | 256 | 1793 |  1280 | 32 |   1508 |
+| Falcon-512-fpuemu  | 128 |  897 |   666 | 16 |    766 |
+| Falcon-1024-fpuemu | 256 | 1793 |  1280 | 16 |   1476 |
+| SPHINGS+-128f      | 128 |   32 | 17088 | 16 |  17188 |
+| SPHINCS+-256f      | 256 |   64 | 49856 | 32 |  50084 |
++--------------------+-----+------+-------+----+--------+
+~~~
+{: #Table1 title="Batch signature sizes "}
 
 ## Privacy {#privacy}
 
