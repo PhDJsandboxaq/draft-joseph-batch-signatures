@@ -237,7 +237,7 @@ _BSign(sk, M=\[msg-0,...,msg-N-1\])_ where _N=2^n_. We first treat the case that
 - **Tree identifier** Sample a tree identifier _id <--$ {0,1}^k_
 - **Generate leaves** For leaf _i in [0,...,N-1]_, sample randomness _r-i <--$ {0,1}^k_. Then set _T[0,i] = H(id, 0, i, r-i, msg-i)._
 - **Populate tree** For levels _l in [1,..., h]_ compute level _l_ from level _l-1_ as follows:
-- - Initialize level _l_ with half as many elements as level _l-1_.
+  - Initialize level _l_ with half as many elements as level _l-1_.
   - For node _j_ on level _l_, set _left=T[l-1, 2j]_ and _right=T[l-1, 2j+1]_
   - _id_ is the public parameter, _(1, l, j)_ is the tweak.
   - _T[l, j] <-- H(id, 1, l, j, left, right)_
@@ -276,8 +276,8 @@ Verification proceeds by first reconstructing the root hash via the leaf informa
 
 - **Generate leaf hash** Get hash from public parameter, tweak, and message _h <-- H(id, 0, i, r, msg)_.
 - **Reconstruct root** Set _l=0_. For _l in [ 1, ..., h]_ set _j <-- floor(i/2^l)_.
-- - If _j mod 2 = 0_: set _h <-- H(id, 1, l, j, h, path[l])_.
-- - If _j mod 2 = 1_: set _h <-- H(id, 1, l, j, path[l], h)_.
+  - If _j mod 2 = 0_: set _h <-- H(id, 1, l, j, h, path[l])_.
+  - If _j mod 2 = 1_: set _h <-- H(id, 1, l, j, path[l], h)_.
 - **Verify root** Return _Verify(pk, sig, h).
   
 # Discussion {#discussion}
