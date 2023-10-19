@@ -245,15 +245,12 @@ _BSign(sk, M=\[msg-0,...,msg-N-1\])_ where _N=2^n_. We first treat the case that
 
 ### Signature construction {#construction-signature}
 
-<!-- TODO there is an error with point 2 and most likely its subpoints. -->
-```
 - **Sign the root** Use the base DSA to sign the root of the Merkle tree _rootsig <-- Sign(sk, id, root, N)_
 - **Sibling path** For each leaf: The sibling path is an array of _h-1_ hashes. Compute the sibling path as follows:
     * Initialize _path-i <-- \[\]_
     * For _l in \[0, ..., N-1\]_, set _j <--floor(i / 2^l)_. If _j mod 2 = 0_ then _path-i\[l\]=T\[l,j+1\]_, else _path-i\[l\]=T\[l,j-1\]_
 - **Generate batch signatures** _bsig-i <-- (id, N, sig, i, r-i, path-i)_
 - **Return batch of signatures** batch signatures are \{bsig-1, ..., bsig-N\}
-```
 
 ~~~
 
