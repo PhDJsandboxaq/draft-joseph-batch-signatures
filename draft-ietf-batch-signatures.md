@@ -249,7 +249,6 @@ Try this
     3. _id_ is the public parameter, _(1, l, j)_ is the tweak.
     4. _T[l, j] <-- H(id | 1 | l | j | left | right)_
 
-```
 - **Root** set _root <-- T[h,0]_
 ```
 
