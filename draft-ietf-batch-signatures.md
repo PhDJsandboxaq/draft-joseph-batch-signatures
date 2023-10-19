@@ -274,11 +274,11 @@ _BSign(sk, M=\[msg-0,...,msg-N-1\])_ where _N=2^n_. We first treat the case that
 
 Verification proceeds by first reconstructing the root hash via the leaf information (public parameters, tweak, message) and iteravely hashing with the nodes provided in the sibling path. Next the base verification algorithm is called to verify the base DSA signature of the root.
 
-1. **Generate leaf hash** Get hash from public parameter, tweak, and message _h <-- H(id, 0, i, r, msg)_.
-2. **Reconstruct root** Set _l=0_. For _l in [ 1, ..., h]_ set _j <-- floor(i/2^l)_.
+- **Generate leaf hash** Get hash from public parameter, tweak, and message _h <-- H(id, 0, i, r, msg)_.
+- **Reconstruct root** Set _l=0_. For _l in [ 1, ..., h]_ set _j <-- floor(i/2^l)_.
 - - If _j mod 2 = 0_: set _h <-- H(id, 1, l, j, h, path[l])_.
 - - If _j mod 2 = 1_: set _h <-- H(id, 1, l, j, path[l], h)_.
-4. **Verify root** Return _Verify(pk, sig, h).
+- **Verify root** Return _Verify(pk, sig, h).
   
 # Discussion {#discussion}
 
