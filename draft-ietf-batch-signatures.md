@@ -245,7 +245,7 @@ Try this
 - - Initialize level _l_ with half as many elements as level _l-1_.
   - For node _j_ on level _l_, set _left=T[l-1, 2j]_ and _right=T[l-1, 2j+1]_
   - _id_ is the public parameter, _(1, l, j)_ is the tweak.
-  - _T[l, j] <-- H(id| 1| l| j| left| right)_
+  - _T[l, j] <-- H(id, 1, l, j, left, right)_
 
 ```
 - **Populate tree** For levels _l in [1,..., h]_ compute level _l_ from level _l-1_ as follows:
