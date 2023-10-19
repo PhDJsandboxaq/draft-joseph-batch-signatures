@@ -240,7 +240,8 @@ Try this
 
 - **Initialize tree** _T[ ]_, which is indexed by the level, and then the row index, e.g. _T[3,5]_ is the fifth node on level 3 of _T_. Height _h <-- log2(N)_
 - **Tree identifier** Sample a tree identifier _id <--$ {0,1}^k_
-- **Generate leaves** For leaf _i in [0,...,N-1]_, sample randomness _r-i <--$ {0,1}^k_. Then set _T[0,i] = H(id , 0 , i , r-i , msg-i)_
+- **Generate leaves** For leaf _i in [0,...,N-1]_, sample randomness _r-i <--$ {0,1}^k_.
+- Then set _T[0,i] = H(id , 0 , i , r-i , msg-i)_
 
 ```
 
