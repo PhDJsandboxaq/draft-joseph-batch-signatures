@@ -276,8 +276,8 @@ Verification proceeds by first reconstructing the root hash via the leaf informa
 
 1. **Generate leaf hash** Get hash from public parameter, tweak, and message _h <-- H(id, 0, i, r, msg)_.
 2. **Reconstruct root** Set _l=0_. For _l in \[ 1,...,h\]_ set _j <-- floor(i / 2^l)_.
-- - If _j mod 2 = 0_: set _h <-- H(id, 1, l, j, h, path\[l\])_
-- - If _j mod 2 = 1_: set _h <-- H(id, 1, l, j, path\[l\] | h)_
+  1. If _j mod 2 = 0_: set _h <-- H(id, 1, l, j, h, path\[l\])_
+  2. If _j mod 2 = 1_: set _h <-- H(id, 1, l, j, path\[l\] | h)_
 3. **Verify root** Return _Verify(pk, sig, h)
   
 # Discussion {#discussion}
