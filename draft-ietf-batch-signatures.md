@@ -58,12 +58,12 @@ informative:
       -
         ins: Ronen Zohar
   BEN20:
-    target: TODO
-    title: TODO
+    target: https://datatracker.ietf.org/doc/html/draft-ietf-tls-batch-signing-00#section-2
+    title: "Batch Signing for TLS: draft-ietf-tls-batch-signing-00"
     date: 2023
     author:
       -
-        ins: DAVID FIX THIS REFERENCE
+        ins: David Benjamin
   GUE2012PARALLEL: DOI.10.1007/s13389-012-0037-z
   SUPERCOP:
     target: https://bench.cr.yp.to/supercop.html
@@ -237,13 +237,11 @@ _BSign(sk, M=\[msg-0,...,msg-N-1\])_ where _N=2^n_. We first treat the case that
     1. Hybrid-aware client, hybrid-aware server: These parties should establish a hybrid shared secret.
  
 
-<!-- TODO there is an error with point 2 and most likely its subpoints. -->
-```
-```
 Try this
 
-- **Initialize tree** _T[]_, which is indexed by the level, and then the row index, e.g. _T[3,5]_ is the fifth node on level _3_ of _T_. Height _h <-- log2(N)_
-- **Tree identifier** Sample a tree identifier _id <--$ {0,1}^k_
+- **Initialize tree** T[], which is indexed by the level, and then the row index, e.g. T[3,5] is the fifth node on level 3 of T. Height h <-- log2(N)
+```
+- **Tree identifier** Sample a tree identifier id <--$ {0,1}^k
 - **Generate leaves** For leaf _i in [0,...,N-1]_, sample randomness _r-i <--$ {0,1}^k_. Then set _T[0,i]=H(id | 0 | i | r-i | msg-i)_
 - **Populate tree** For levels _l in [1,..., h]_ compute level _l_ from level _l-1_ as follows:
     1. Initialize level _l_ with half as many elements as level _l-1_.
