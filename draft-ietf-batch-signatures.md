@@ -31,7 +31,7 @@ author:
     email: carlos.aguilar@sandboxaq.com
 
 informative:
-  AAB+:
+  AABBHHJM23:
     target: https://eprint.iacr.org/2023/492
     title: "Batch Signatures, Revisited"
     date: 2023
@@ -91,7 +91,7 @@ informative:
         ins: David Benjamin
   CRYSTALS-DILITHIUM: DOI.10.46586/tches.v2018.i1.238-268
   FALCON: DOI.10.6028/nist.fips.206
-  GUE2012PARALLEL: DOI.10.1007/s13389-012-0037-z
+  GK12: DOI.10.1007/s13389-012-0037-z
   NSM10:
     target: https://www.whitehouse.gov/briefing-room/statements-releases/2022/05/04/national-security-memorandum-on-promoting-united-states-leadership-in-quantum-computing-while-mitigating-risks-to-vulnerable-cryptographic-systems/
     title: "National Security Memorandum on Promoting United States Leadership in Quantum Computing While Mitigating Risks to Vulnerable Cryptographic Systems"
@@ -99,7 +99,7 @@ informative:
     author:
       -
         ins: Shalanda D. Young
-  SPHINCS+: DOI.10.1145/3319535.3363229
+  SPHINCS: DOI.10.1145/3319535.3363229
   SUPERCOP:
     target: https://bench.cr.yp.to/supercop.html
     title: "SUPERCOP: System for unified performance evaluation related to cryptographic operations and primitives."
@@ -135,7 +135,7 @@ These challenges are amplified by upcoming public-key cryptography standards: in
 July 2022, the US National Institute of Standards and Technology (NIST) announced
 four algorithms for post-quantum cryptography (PQC) standardisation. In particular,
 three digital signature algorithms -- Dilithium {{CRYSTALS-DILITHIUM}},
-Falcon {{FALCON}} and SPHINCS+ {{SPHINCS}} -- were
+Falcon {{FALCON}} and SPHINCS {{SPHINCS}} -- were
 selected, and migration from current standards to these new algorithms is already
 underway {{NSM10}}. One of the key issues when considering migrating to PQC is
 that the computational costs of the new digital signature algorithms are significantly
@@ -339,7 +339,7 @@ In {{Table1}} one can see the size of a batch signature which signs 16 or 32 tra
 | Falcon-512-fpuemu  | 128 |  897 |   666 | 16 |    766 |
 | Falcon-1024-fpuemu | 256 | 1793 |  1280 | 16 |   1476 |
 | SPHINGS+-128f      | 128 |   32 | 17088 | 16 |  17188 |
-| SPHINCS+-256f      | 256 |   64 | 49856 | 32 |  50084 |
+| SPHINCS-256f      | 256 |   64 | 49856 | 32 |  50084 |
 +--------------------+-----+------+-------+----+--------+
 ~~~
 {: #Table1 title="Batch signature sizes "}
