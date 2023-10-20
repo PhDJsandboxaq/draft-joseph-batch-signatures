@@ -31,6 +31,27 @@ author:
     email: carlos.aguilar@sandboxaq.com
 
 informative:
+  AAB+:
+    target: https://eprint.iacr.org/2023/492
+    title: "Batch Signatures, Revisited"
+    date: 2023
+    author:
+      -
+        ins: Carlos Aguilar-Melchor
+      -
+        ins: Martin Albrecht
+      -
+        ins: Thomas Bailleux
+      -
+        ins: Nina Bindel
+      -
+        ins: James Howe
+      -
+        ins: Andreas Huelsing
+      -
+        ins: David Joseph
+      -
+        ins: Marc Manzano
   AES-NI:
     target: https://www.intel.cn/content/dam/develop/external/us/en/documents/10tb24-breakthrough-aes-performance-with-intel-aes-new-instructions-final-secure-165940.pdf
     title: "Breakthrough AES Performance with Intel AES New Instructions"
@@ -61,7 +82,24 @@ informative:
     author:
       -
         ins: David Benjamin
+  BEN23:
+    target: https://datatracker.ietf.org/doc/draft-davidben-tls-merkle-tree-certs/
+    title: "Merkle Tree Certificates for TLS"
+    date: 2023-09-08
+    author:
+      -
+        ins: David Benjamin
+  CRYSTALS-DILITHIUM: DOI.10.46586/tches.v2018.i1.238-268
+  FALCON: DOI.10.6028/nist.fips.206
   GUE2012PARALLEL: DOI.10.1007/s13389-012-0037-z
+  NSM10:
+    target: https://www.whitehouse.gov/briefing-room/statements-releases/2022/05/04/national-security-memorandum-on-promoting-united-states-leadership-in-quantum-computing-while-mitigating-risks-to-vulnerable-cryptographic-systems/
+    title: "National Security Memorandum on Promoting United States Leadership in Quantum Computing While Mitigating Risks to Vulnerable Cryptographic Systems"
+    date: 2010-05-04
+    author:
+      -
+        ins: Shalanda D. Young
+  SPHINCS+: DOI.10.1145/3319535.3363229
   SUPERCOP:
     target: https://bench.cr.yp.to/supercop.html
     title: "SUPERCOP: System for unified performance evaluation related to cryptographic operations and primitives."
@@ -71,44 +109,6 @@ informative:
         ins: Daniel J. Bernstein
       -
         ins: Tanja Lange
-  CRYSTALS-DILITHIUM: DOI.10.46586/tches.v2018.i1.238-268
-  FALCON: DOI.10.6028/nist.fips.206
-  SPHINCS+: DOI.10.1145/3319535.3363229
-  NSM10:
-    target: https://www.whitehouse.gov/briefing-room/statements-releases/2022/05/04/national-security-memorandum-on-promoting-united-states-leadership-in-quantum-computing-while-mitigating-risks-to-vulnerable-cryptographic-systems/
-    title: "National Security Memorandum on Promoting United States Leadership in Quantum Computing While Mitigating Risks to Vulnerable Cryptographic Systems"
-    date: 2010-05-04
-    author:
-      -
-        ins: Shalanda D. Young
-  AAB+:
-    target: https://eprint.iacr.org/2023/492
-    title: "Batch Signatures, Revisited"
-    date: 2023
-    author:
-      -
-        ins: Carlos Aguilar-Melchor
-      -
-        ins: Martin Albrecht
-      -
-        ins: Thomas Bailleux
-      -
-        ins: Nina Bindel
-      -
-        ins: James Howe
-      -
-        ins: Andreas Huelsing
-      -
-        ins: David Joseph
-      -
-        ins: Marc Manzano
-  BEN23:
-    target: https://datatracker.ietf.org/doc/draft-davidben-tls-merkle-tree-certs/
-    title: "Merkle Tree Certificates for TLS"
-    date: 2023-09-08
-    author:
-      -
-        ins: David Benjamin
 
 --- abstract
 
@@ -142,7 +142,6 @@ that the computational costs of the new digital signature algorithms are signifi
 higher than those of ECDSA\@; the fastest currently-deployed primitive for signing.
 This severely impacts the ability of systems to scale and inhibits their migration
 to PQC, especially in higher-throughput settings.
-
 
 # Preliminaries {#Preliminaries}
 
