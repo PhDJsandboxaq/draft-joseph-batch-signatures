@@ -367,7 +367,7 @@ A client verifies a server's identity by:
 
 - Verifying a server's signature: the server signs the TLS transcript up to that point with their private key and the client verifies with the server's public key _pk_.
 - Verifying that the public key belongs to the server by verifying the trusted CA's signatures certificate which states that the server owns _pk_.
-- - Doing this repeatedly in the case of certificate chains until reaching a root CA.
+  - Doing this repeatedly in the case of certificate chains until reaching a root CA.
 
 The document of {{BEN23}} relates specifically to signing certificates, the second bullet above, whereas the constructions of {{BEN20}} and this document pertain to a server authenticating itself online, relating to the first bullet above. The two have slightly different usecases, which both benefit from Merkle tree constructions under different scenarios.
 
