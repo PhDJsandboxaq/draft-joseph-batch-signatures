@@ -30,9 +30,6 @@ author:
     organization: SandboxAQ
     email: carlos.aguilar@sandboxaq.com
 
-normative:
-  TLS13: RFC8446
-
 informative:
   AES-NI:
     target: https://www.intel.cn/content/dam/develop/external/us/en/documents/10tb24-breakthrough-aes-performance-with-intel-aes-new-instructions-final-secure-165940.pdf
@@ -84,7 +81,7 @@ informative:
     author:
       -
         ins: Shalanda D. Young
-  BATCHSIGREV:
+  AAB+:
     target: https://eprint.iacr.org/2023/492
     title: "Batch Signatures, Revisited"
     date: 2023
@@ -105,7 +102,7 @@ informative:
         ins: David Joseph
       -
         ins: Marc Manzano
-  MTCERTS:
+  BEN23:
     target: https://datatracker.ietf.org/doc/draft-davidben-tls-merkle-tree-certs/
     title: "Merkle Tree Certificates for TLS"
     date: 2023-09-08
@@ -180,7 +177,7 @@ keyed with _v_.
 * Second preimage resistance - given an input _x1_, it should be difficult to find another distinct input _x2_ such that _H(x1)=H(x2)_.
 * Target collision resistance - choose input _x1_. Then given a key _v_, find _x2_ such that _Hv(x1) = Hv(x2)_.
 
-Target collision resistance is a weaker requirement than collision resistance but is sufficient for signing purposes. Tweakable hash functions enable us to tightly achieve TCR even in multi-target settings where an adversary can attack one out of many targets. Specifically, the property achieved in the following is _single-function multi-target collision resistance_ (SM-TCR) which is described more formally in {{BATCHSIGREV}}.
+Target collision resistance is a weaker requirement than collision resistance but is sufficient for signing purposes. Tweakable hash functions enable us to tightly achieve TCR even in multi-target settings where an adversary can attack one out of many targets. Specifically, the property achieved in the following is _single-function multi-target collision resistance_ (SM-TCR) which is described more formally in {{AAB+}}.
 
 ### Tweakable Hash functions {#Preliminaries-tweakable-hashes}
 
@@ -214,7 +211,7 @@ as well as the sibling path of the individual message. We discuss the applicabil
 of such signatures to various protocols, but only at a high level. The document describes
 a scheme which enables smaller signatures than outlined in {{BEN20}} by relying not
 on hash collision resistance, but instead on target collision resistance, however for
-the security proofs the reader should see {{BATCHSIGREV}}.
+the security proofs the reader should see {{AAB+}}.
 
 # Batch signature construction {#construction}
 
@@ -259,7 +256,7 @@ _BSign(sk, M=\[msg-0,...,msg-N-1\])_ where _N=2^n_. We first treat the case that
 - **Generate batch signatures** _bsig-i <-- (id, N, sig, i, r-i, path-i)_
 - **Return batch of signatures** batch signatures are \{bsig-1, ..., bsig-N\}
 
-Figure {{fig-merkle-tree}} illustrates the construction of the Merkle tree and the signature of the root.
+{{fig-merkle-tree}} illustrates the construction of the Merkle tree and the signature of the root.
 
 ~~~
 
@@ -353,30 +350,33 @@ We do not discuss the details of such hybrid signatures or hybrid certificates i
 
 ## Privacy {#privacy}
 
-In {{BATCHSIGREV}} two privacy notions are defined:
+In {{AAB+}} two privacy notions are defined:
 
 - **Batch Privacy** can one cannot deduce whether two messages were signed in the same batch.
 - **weak Batch Privacy** for two messages signed in the same batch, if one is given the signature for one message, it does not leak any information about the other message, for which no signature is available.
 
-The authors prove in {{BATCHSIGREV}} that this construction achieves the weaker variant, but not full Batch Privacy.
+The authors prove in {{AAB+}} that this construction achieves the weaker variant, but not full Batch Privacy.
 
 # Relationship to Merkle Tree Certificates {#relationship-MTC}
 
-A Merkle tree construction for TLS certificates {{MTCERTS}} is being developed at the time of writing, by the same author of the original Merkle tree signing draft {{BEN20}}. The construction bears strong similarities to the current proposal. In ordinary TLS certificates, a Certificate Authority (CA) signs a certificate which asserts that a public key belongs to a given subscriber. In the Merkle tree construction, many certificates are batched together using a similar Merkle tree construction to the one presented in this document. The CA then signs only the root of the Merkle tree, and returns (root signature + sibling path) to the subscriber.
+A Merkle tree construction for TLS certificates {{BEN23}} is being developed at the time of writing, by the same author of the original Merkle tree signing draft {{BEN20}}. The construction bears strong similarities to the current proposal. In ordinary TLS certificates, a Certificate Authority (CA) signs a certificate which asserts that a public key belongs to a given subscriber. In the Merkle tree construction, many certificates are batched together using a similar Merkle tree construction to the one presented in this document. The CA then signs only the root of the Merkle tree, and returns (root signature + sibling path) to the subscriber.
 
 A client verifies a server's identity by:
+
 - Verifying a server's signature: the server signs the TLS transcript up to that point with their private key and the client verifies with the server's public key _pk_.
 - Verifying that the public key belongs to the server by verifying the trusted CA's signatures certificate which states that the server owns _pk_.
 - - Doing this repeatedly in the case of certificate chains until reaching a root CA.
 
-The document of {{MTCERTS}} relates specifically to signing certificates, the second bullet above, whereas the constructions of {{BEN20}} and this document pertain to a server authenticating itself online, relating to the first bullet above. The two have slightly different usecases, which both benefit from Merkle tree constructions under different scenarios.
+The document of {{BEN23}} relates specifically to signing certificates, the second bullet above, whereas the constructions of {{BEN20}} and this document pertain to a server authenticating itself online, relating to the first bullet above. The two have slightly different usecases, which both benefit from Merkle tree constructions under different scenarios.
 
 Cases where Merkle tree certificates may be appropriate have certain properties: 
+
 - Certificates are short-lived.
 - Certificates are issued after a significant delay, e.g. around one hour.
 - Batch sizes can be estimated to be up to 2^24 (based on unexpired number of certificates in certificate transparency logs)
 
 Cases where TLS batch signing may be appropriate differ slightly, for example:
+
 - High throughput servers and load balancers - in particular when rate of incoming signing requests exceeds _(time * threads)_ where _time_ is the average time for a signing thread to generate a signature, and _threads_ is the number of available signing threads. 
 - In scenarios where the latency is not extremely sensitive: waiting for signatures to arrive before constructing a Merkle tree incurs a small extra latency cost which is amortised by the significant extra throughput achievable.
 - Batch sizes are likely to be smaller than the usecase for Merkle tree certificates. Batch sizes of 16 or 32 can already improve throughput by an order of magnitude.
