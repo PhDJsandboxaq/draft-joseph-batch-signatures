@@ -61,7 +61,7 @@ informative:
     author:
       -
         ins: David Benjamin
-  GUE2012PARALLEL: DOI.10.1007/s13389-012-0037-z
+  GK12: DOI.10.1007/s13389-012-0037-z
   SUPERCOP:
     target: https://bench.cr.yp.to/supercop.html
     title: "SUPERCOP: System for unified performance evaluation related to cryptographic operations and primitives."
@@ -73,7 +73,7 @@ informative:
         ins: Tanja Lange
   CRYSTALS-DILITHIUM: DOI.10.46586/tches.v2018.i1.238-268
   FALCON: DOI.10.6028/nist.fips.206
-  SPHINCS+: DOI.10.1145/3319535.3363229
+  SPHINCS: DOI.10.1145/3319535.3363229
   NSM10:
     target: https://www.whitehouse.gov/briefing-room/statements-releases/2022/05/04/national-security-memorandum-on-promoting-united-states-leadership-in-quantum-computing-while-mitigating-risks-to-vulnerable-cryptographic-systems/
     title: "National Security Memorandum on Promoting United States Leadership in Quantum Computing While Mitigating Risks to Vulnerable Cryptographic Systems"
@@ -81,7 +81,7 @@ informative:
     author:
       -
         ins: Shalanda D. Young
-  AAB+:
+  AABBHHJM23:
     target: https://eprint.iacr.org/2023/492
     title: "Batch Signatures, Revisited"
     date: 2023
@@ -113,7 +113,7 @@ informative:
 --- abstract
 
 This document proposes a construction for batch signatures where a single,
-potentially expensive, "inner" digital signature authenticates a Merkle tree
+potentially expensive, "base" digital signature authenticates a Merkle tree
 constructed from many messages.
 
 --- middle
@@ -123,7 +123,7 @@ constructed from many messages.
 The computational complexity of unkeyed and symmetric cryptography is known
 to be significantly lower than asymmetric cryptography. Indeed, hash functions,
 stream or block ciphers typically require between a few cycles {{AES-NI}} to
-a few hundred cycles {{GUE2012PARALLEL}}, whereas key establishment
+a few hundred cycles {{GK12}}, whereas key establishment
 and digital signature primitives require between tens of thousands to hundreds
 of millions of cycles {{SUPERCOP}}. In situations where a substantial
 volume of signatures must be handled -- e.g. a Hardware Security Module (HSM)
@@ -135,11 +135,11 @@ These challenges are amplified by upcoming public-key cryptography standards: in
 July 2022, the US National Institute of Standards and Technology (NIST) announced
 four algorithms for post-quantum cryptography (PQC) standardisation. In particular,
 three digital signature algorithms -- Dilithium {{CRYSTALS-DILITHIUM}},
-Falcon {{FALCON}} and SPHINCS+ {{SPHINCS+}} -- were
+Falcon {{FALCON}} and SPHINCS+ {{SPHINCS}} -- were
 selected, and migration from current standards to these new algorithms is already
 underway {{NSM10}}. One of the key issues when considering migrating to PQC is
 that the computational costs of the new digital signature algorithms are significantly
-higher than those of ECDSA\@; the fastest currently-deployed primitive for signing.
+higher than those of ECDSA; the fastest currently-deployed primitive for signing.
 This severely impacts the ability of systems to scale and inhibits their migration
 to PQC, especially in higher-throughput settings.
 
@@ -177,7 +177,7 @@ keyed with _v_.
 * Second preimage resistance - given an input _x1_, it should be difficult to find another distinct input _x2_ such that _H(x1)=H(x2)_.
 * Target collision resistance - choose input _x1_. Then given a key _v_, find _x2_ such that _Hv(x1) = Hv(x2)_.
 
-Target collision resistance is a weaker requirement than collision resistance but is sufficient for signing purposes. Tweakable hash functions enable us to tightly achieve TCR even in multi-target settings where an adversary can attack one out of many targets. Specifically, the property achieved in the following is _single-function multi-target collision resistance_ (SM-TCR) which is described more formally in {{AAB+}}.
+Target collision resistance is a weaker requirement than collision resistance but is sufficient for signing purposes. Tweakable hash functions enable us to tightly achieve TCR even in multi-target settings where an adversary can attack one out of many targets. Specifically, the property achieved in the following is _single-function multi-target collision resistance_ (SM-TCR) which is described more formally in {{AABBHHJM23}}.
 
 ### Tweakable Hash functions {#Preliminaries-tweakable-hashes}
 
@@ -211,7 +211,7 @@ as well as the sibling path of the individual message. We discuss the applicabil
 of such signatures to various protocols, but only at a high level. The document describes
 a scheme which enables smaller signatures than outlined in {{BEN20}} by relying not
 on hash collision resistance, but instead on target collision resistance, however for
-the security proofs the reader should see {{AAB+}}.
+the security proofs the reader should see {{AABBHHJM23}}.
 
 # Batch signature construction {#construction}
 
@@ -285,8 +285,6 @@ Verification proceeds by first reconstructing the root hash via the leaf informa
   - If _j mod 2 = 0_: set _h <-- H(id, 1, l, j, h, path[l])_.
   - If _j mod 2 = 1_: set _h <-- H(id, 1, l, j, path[l], h)_.
 - **Verify root** Return _Verify(pk, sig, h)_.
-  
-# Discussion {#discussion}
 
 <!-- Hybrid?  Can just do any other hybrid construction scheme, have BSign just call that internally as S.Sign, and S.Verify. We should consider the separability concerns etc though. -->
 <!-- How are tree id's generated in a cross-instantiation-secure way? Are we worried about collisions? λ only ranges up to 256. -->
@@ -308,12 +306,17 @@ and being signed roughly at the same time.
 
 ## Correctness {#correctness}
 
+Correctness can be broken down into correctness of the base DSA, and correctness of the Merkle tree. Correctness is considered a security property, and is generally proven for each DSA, so we only need to demonstrate correctness of the Merkle tree root. The Merkle proof assures that a message is a leaf at a given index or address, in the tree identified by _id_, and nothing more.
+
+Hash functions are symmetric and therefore deterministic in nature, therefore, given the correct sibling path as part of the signer's signature, will generate the Merkle tree root correctly. Given an accepting (message, signature) pair, so long as one uses a hash function that provides second preimage resistance (from which the tweakable hash then provides SM-TCR), this guarantees that - except with negligible probability - the proof must be valid only for the message provided.
+
 ## Domain separation {#dom-sep}
 
 Our construction uses tweakable hashfunctions which take as input a public parameter _id_, a tweak _t_, and a message _msg_. The public parameter domain separates between Merkle trees used in the same protocol. In {{BEN20}} it is suggested that TLS context strings are used to prevent cross-protocol attacks, however we note here that _msg_, which is the full protocol transcript up to that point, includes such protocol context strings. Therefore domain separation is handled implicitly. However in an idea world all protocols would agree on a uniform approach to domain separation, and so we invite comment on how to concretely handle this aspect.
 
 ## Target collision resistance vs collision resistance {#tcr-vs-cr}
-TODO
+
+Instead of collision resistance, relying on the weaker property of TCR, and more specifically SM-TCR, increases the attack complexity of finding a forgery and breaking the scheme. The result is that smaller hash outputs are required to achieve an equivalent security level. This key modification versus {{BEN20}} thus provides smaller signatures or higher security for the same sized signatures. The reduction in signature size is _(h-1) * d_ where _h_ is the tree height and _d_ is the difference between the hash output length based on SM-TCR and that based on collision resistance.
 
 # Post-quantum and hybrid signatures {#pqc}
 
@@ -350,12 +353,12 @@ We do not discuss the details of such hybrid signatures or hybrid certificates i
 
 ## Privacy {#privacy}
 
-In {{AAB+}} two privacy notions are defined:
+In {{AABBHHJM23}} two privacy notions are defined:
 
 - **Batch Privacy** can one cannot deduce whether two messages were signed in the same batch.
 - **weak Batch Privacy** for two messages signed in the same batch, if one is given the signature for one message, it does not leak any information about the other message, for which no signature is available.
 
-The authors prove in {{AAB+}} that this construction achieves the weaker variant, but not full Batch Privacy.
+The authors prove in {{AABBHHJM23}} that this construction achieves the weaker variant, but not full Batch Privacy.
 
 # Relationship to Merkle Tree Certificates {#relationship-MTC}
 
