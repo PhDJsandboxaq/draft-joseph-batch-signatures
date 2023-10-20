@@ -315,7 +315,9 @@ Our construction uses tweakable hashfunctions which take as input a public param
 
 ## Target collision resistance vs collision resistance {#tcr-vs-cr}
 
-Instead of collision resistance, relying on the weaker property of TCR, and more specifically SM-TCR, increases the attack complexity of finding a forgery and breaking the scheme. The result is that smaller hash outputs are required to achieve an equivalent security level. This key modification versus {{BEN20}} thus provides smaller signatures or higher security for the same sized signatures. The reduction in signature size is _(h-1) * d_ where _h_ is the tree height and _d_ is the difference between the hash output length based on SM-TCR and that based on collision resistance.
+Instead of collision resistance, relying on the weaker assumption of TCR, and more specifically SM-TCR, increases the attack complexity of finding a forgery and breaking the scheme. The result is that smaller hash outputs are required to achieve an equivalent security level. This key modification versus {{BEN20}} thus provides smaller signatures or higher security for the same sized signatures. 
+
+The reduction in signature size is _(h-1) * d_ where _h_ is the tree height and _d_ is the difference between the hash output length based on SM-TCR and that based on collision resistance. Usually TCR implies using, for example, 128b digests to achieve 128b security, whereas basing on CR would require 256b digests. This change therefore in essence halves the size of the Merkle tree proofs.
 
 # Post-quantum and hybrid signatures {#pqc}
 
