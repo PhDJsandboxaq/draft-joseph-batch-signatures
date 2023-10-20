@@ -339,7 +339,7 @@ In {{Table1}} one can see the size of a batch signature which signs 16 or 32 tra
 | Falcon-512-fpuemu  | 128 |  897 |   666 | 16 |    766 |
 | Falcon-1024-fpuemu | 256 | 1793 |  1280 | 16 |   1476 |
 | SPHINGS+-128f      | 128 |   32 | 17088 | 16 |  17188 |
-| SPHINCS-256f      | 256 |   64 | 49856 | 32 |  50084 |
+| SPHINCS-256f       | 256 |   64 | 49856 | 32 |  50084 |
 +--------------------+-----+------+-------+----+--------+
 ~~~
 {: #Table1 title="Batch signature sizes "}
