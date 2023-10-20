@@ -105,6 +105,13 @@ informative:
         ins: David Joseph
       -
         ins: Marc Manzano
+  MTCERTS:
+    target: https://datatracker.ietf.org/doc/draft-davidben-tls-merkle-tree-certs/
+    title: "Merkle Tree Certificates for TLS"
+    date: 2023-09-08
+    author:
+      -
+        ins: David Benjamin
 
 --- abstract
 
@@ -252,6 +259,8 @@ _BSign(sk, M=\[msg-0,...,msg-N-1\])_ where _N=2^n_. We first treat the case that
 - **Generate batch signatures** _bsig-i <-- (id, N, sig, i, r-i, path-i)_
 - **Return batch of signatures** batch signatures are \{bsig-1, ..., bsig-N\}
 
+Figure {{fig-merkle-tree}} illustrates the construction of the Merkle tree and the signature of the root.
+
 ~~~
 
   lvl3=root         (T30)--DSA--> sig
@@ -307,10 +316,17 @@ and being signed roughly at the same time.
 Our construction uses tweakable hashfunctions which take as input a public parameter _id_, a tweak _t_, and a message _msg_. The public parameter domain separates between Merkle trees used in the same protocol. In {{BEN20}} it is suggested that TLS context strings are used to prevent cross-protocol attacks, however we note here that _msg_, which is the full protocol transcript up to that point, includes such protocol context strings. Therefore domain separation is handled implicitly. However in an idea world all protocols would agree on a uniform approach to domain separation, and so we invite comment on how to concretely handle this aspect.
 
 ## Target collision resistance vs collision resistance {#tcr-vs-cr}
+TODO
 
-# Signature sizes {#signature-sizes}
+# Post-quantum and hybrid signatures {#pqc}
 
-In table {{Table1}} one can see the size of a batch signature which signs 16 or 32 transcripts, relative to the size of the underlying primitive. For post-quantum schemes the overhead in size is relatively small due to the much larger sizes of the base DSAs.
+**Digital signatures** The transition to post-quantum cryptography (PQC) coincides with increasing demands on performance and throughput. Post-quantum signatures suffer worse performance both on computation and public key/signature sizes versus their quantum-vulnerable counterparts which are based on elliptic curve cryptography and RSA. As a result, techniques to boost performance are especially relevant in this case. In {{pqc-signature-sizes}} one can see that the extra size cost due to the sibling path is roughly independent of the algorithm used (therefore relatively much smaller for PQC).
+
+**Hash functions** In contrast to DSAs, Hash functions are purely symmetric cryptography which is weakened but not broken by quantum computers. Therefore the Merkle tree construction is not affected in the post-quantum era, other than a doubling of parameters (in the worst case) to achieve the same security level.
+
+## Signature sizes {#pqc-signature-sizes}
+
+In {{Table1}} one can see the size of a batch signature which signs 16 or 32 transcripts, relative to the size of the underlying primitive. For post-quantum schemes the overhead in size is relatively small due to the much larger sizes of the base DSAs.
 
 ~~~
 +--------------------+-----+------+-------+----+--------+
@@ -329,7 +345,41 @@ In table {{Table1}} one can see the size of a batch signature which signs 16 or 
 ~~~
 {: #Table1 title="Batch signature sizes "}
 
+## Hybrid signatures {pqc-hybrid}
+
+A likely mode of transition to PQC will be via 'hybrid mode', where data is protected independently via two algorithms, one quantum-vulnerable (but well studied and understood) and one PQC algorithm. This is to mitigate the risk of a complete break - classical or quantum - of a PQC algorithm. Breaking a hybrid scheme should imply breaking _both_ of the algorithms used.
+
+We do not discuss the details of such hybrid signatures or hybrid certificates in this document, but simply state that so long as the hybrid scheme adheres to the API described above, the Batch signature Merkle tree construction described in this document remains unaltered. Explicitly, the root is generated via the procedure of {{construction-tree}}. Then the root is signed by the hybrid DSA, whose functions _KeyGen_, _Sign_, _Verify_ are constructed via some composition of _KeyGen_, _Sign_, _Verify_ for a PQC algorithm and _KeyGen_, _Sign_, _Verify_ for some presently-used algorithm.
+
 ## Privacy {#privacy}
+
+In {{BATCHSIGREV}} two privacy notions are defined:
+
+- **Batch Privacy** can one cannot deduce whether two messages were signed in the same batch.
+- **weak Batch Privacy** for two messages signed in the same batch, if one is given the signature for one message, it does not leak any information about the other message, for which no signature is available.
+
+The authors prove in {{BATCHSIGREV}} that this construction achieves the weaker variant, but not full Batch Privacy.
+
+# Relationship to Merkle Tree Certificates {#relationship-MTC}
+
+A Merkle tree construction for TLS certificates {{MTCERTS}} is being developed at the time of writing, by the same author of the original Merkle tree signing draft {{BEN20}}. The construction bears strong similarities to the current proposal. In ordinary TLS certificates, a Certificate Authority (CA) signs a certificate which asserts that a public key belongs to a given subscriber. In the Merkle tree construction, many certificates are batched together using a similar Merkle tree construction to the one presented in this document. The CA then signs only the root of the Merkle tree, and returns (root signature + sibling path) to the subscriber.
+
+A client verifies a server's identity by:
+- Verifying a server's signature: the server signs the TLS transcript up to that point with their private key and the client verifies with the server's public key _pk_.
+- Verifying that the public key belongs to the server by verifying the trusted CA's signatures certificate which states that the server owns _pk_.
+- - Doing this repeatedly in the case of certificate chains until reaching a root CA.
+
+The document of {{MTCERTS}} relates specifically to signing certificates, the second bullet above, whereas the constructions of {{BEN20}} and this document pertain to a server authenticating itself online, relating to the first bullet above. The two have slightly different usecases, which both benefit from Merkle tree constructions under different scenarios.
+
+Cases where Merkle tree certificates may be appropriate have certain properties: 
+- Certificates are short-lived.
+- Certificates are issued after a significant delay, e.g. around one hour.
+- Batch sizes can be estimated to be up to 2^24 (based on unexpired number of certificates in certificate transparency logs)
+
+Cases where TLS batch signing may be appropriate differ slightly, for example:
+- High throughput servers and load balancers - in particular when rate of incoming signing requests exceeds _(time * threads)_ where _time_ is the average time for a signing thread to generate a signature, and _threads_ is the number of available signing threads. 
+- In scenarios where the latency is not extremely sensitive: waiting for signatures to arrive before constructing a Merkle tree incurs a small extra latency cost which is amortised by the significant extra throughput achievable.
+- Batch sizes are likely to be smaller than the usecase for Merkle tree certificates. Batch sizes of 16 or 32 can already improve throughput by an order of magnitude.
 
 # Acknowledgements {#acknowledgements}
 
