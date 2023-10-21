@@ -1,7 +1,7 @@
 ---
 title: Batched Signatures
-abbrev: ietf-batched-signatures
-docname: draft-ietf-batch-signatures-latest
+abbrev: ietf-tls-batch-signatures
+docname: draft-ietf-tls-batch-signatures-latest
 date: 2023-10-23
 category: info
 
@@ -353,7 +353,7 @@ invite comment on how to concretely handle this aspect.
 Instead of collision resistance, relying on the weaker assumption of TCR, and more specifically SM-TCR,
 increases the attack complexity of finding a forgery and breaking the scheme. The result is that
 smaller hash outputs are required to achieve an equivalent security level. This key modification
-versus {{BEN20}} thus provides smaller signatures or higher security for the same sized signatures. 
+versus {{BEN20}} thus provides smaller signatures or higher security for the same sized signatures.
 
 The reduction in signature size is _(h-1) * d_ where _h_ is the tree height and _d_ is the difference
 between the hash output length based on SM-TCR and that based on collision resistance. Usually TCR
@@ -443,7 +443,7 @@ constructions of {{BEN20}} and this document pertain to a server authenticating 
 the first bullet above. The two have slightly different usecases, which both benefit from Merkle tree
 constructions under different scenarios.
 
-Cases where Merkle tree certificates may be appropriate have certain properties: 
+Cases where Merkle tree certificates may be appropriate have certain properties:
 
 - Certificates are short-lived.
 - Certificates are issued after a significant delay, e.g. around one hour.
@@ -454,7 +454,7 @@ Cases where TLS batch signing may be appropriate differ slightly, for example:
 
 - High throughput servers and load balancers - in particular when rate of incoming signing requests exceeds
   _(time * threads)_ where _time_ is the average time for a signing thread to generate a signature, and
-  _threads_ is the number of available signing threads. 
+  _threads_ is the number of available signing threads.
 - In scenarios where the latency is not extremely sensitive: waiting for signatures to arrive before constructing
   a Merkle tree incurs a small extra latency cost which is amortised by the significant extra throughput achievable.
 - Batch sizes are likely to be smaller than the usecase for Merkle tree certificates. Batch sizes of 16 or 32 can
