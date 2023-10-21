@@ -2,7 +2,7 @@
 title: Batched Signatures
 abbrev: ietf-batched-signatures
 docname: draft-ietf-batch-signatures-latest
-date: 2023-09-05
+date: 2023-10-23
 category: info
 
 ipr: trust200902
