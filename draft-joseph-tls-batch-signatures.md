@@ -1,7 +1,7 @@
 ---
 title: Batched Signatures
-abbrev: ietf-tls-batch-signatures
-docname: draft-ietf-tls-batch-signatures-latest
+abbrev: joseph-tls-batch-signatures
+docname: draft-joseph-tls-batch-signatures-latest
 date: 2023-10-23
 category: info
 
