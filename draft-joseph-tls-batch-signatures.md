@@ -116,6 +116,10 @@ This document proposes a construction for batch signatures where a single,
 potentially expensive, "base" digital signature authenticates a Merkle tree
 constructed from many messages.
 
+Discussion of this work is encouraged to happen on the IETF TLSWG mailing list
+tls@ietf.org or on the GitHub repository which contains the draft:
+https://github.com/PhDJsandboxaq/draft-joseph-batch-signatures
+
 --- middle
 
 # Introduction {#introduction}
