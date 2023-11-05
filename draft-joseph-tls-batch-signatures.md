@@ -2,7 +2,7 @@
 title: Batched Signatures
 abbrev: joseph-tls-batch-signatures
 docname: draft-joseph-tls-batch-signatures-latest
-date: 2023-10-23
+date: 2023-11-05
 category: info
 
 ipr: trust200902
