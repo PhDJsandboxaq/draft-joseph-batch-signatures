@@ -1,8 +1,8 @@
 ---
 title: Batched Signatures
-abbrev: ietf-batched-signatures
-docname: draft-ietf-batch-signatures-latest
-date: 2023-09-05
+abbrev: joseph-tls-batch-signatures
+docname: draft-joseph-tls-batch-signatures-latest
+date: 2023-11-05
 category: info
 
 ipr: trust200902
@@ -116,6 +116,10 @@ This document proposes a construction for batch signatures where a single,
 potentially expensive, "base" digital signature authenticates a Merkle tree
 constructed from many messages.
 
+Discussion of this work is encouraged to happen on the IETF TLSWG mailing list
+tls@ietf.org or on the GitHub repository which contains the draft:
+https://github.com/PhDJsandboxaq/draft-joseph-batch-signatures
+
 --- middle
 
 # Introduction {#introduction}
@@ -171,12 +175,20 @@ keyed with _v_.
 
 ### Hash function properties {#Preliminaries-hash-properties}
 
-* Collision resistance - no two inputs _x1, x2_ should map to the same output hash (regardless of choice of key in the case of a keyed hash).
-* Preimage resistance - it should be difficult to guess the input value _x_ for a hash function given only its output _H(x)_.
-* Second preimage resistance - given an input _x1_, it should be difficult to find another distinct input _x2_ such that _H(x1)=H(x2)_.
-* Target collision resistance - choose input _x1_. Then given a key _v_, find _x2_ such that _Hv(x1) = Hv(x2)_.
+* Collision resistance - no two inputs _x1, x2_ should map to the same output hash
+  (regardless of choice of key in the case of a keyed hash).
+* Preimage resistance - it should be difficult to guess the input value _x_ for a hash
+  function given only its output _H(x)_.
+* Second preimage resistance - given an input _x1_, it should be difficult to find
+  another distinct input _x2_ such that _H(x1)=H(x2)_.
+* Target collision resistance - choose input _x1_. Then given a key _v_, find _x2_
+ such that _Hv(x1) = Hv(x2)_.
 
-Target collision resistance is a weaker requirement than collision resistance but is sufficient for signing purposes. Tweakable hash functions enable us to tightly achieve TCR even in multi-target settings where an adversary can attack one out of many targets. Specifically, the property achieved in the following is _single-function multi-target collision resistance_ (SM-TCR) which is described more formally in {{AABBHHJM23}}.
+Target collision resistance is a weaker requirement than collision resistance but is
+sufficient for signing purposes. Tweakable hash functions enable us to tightly achieve
+TCR even in multi-target settings where an adversary can attack one out of many targets.
+Specifically, the property achieved in the following is _single-function multi-target
+collision resistance_ (SM-TCR) which is described more formally in {{AABBHHJM23}}.
 
 ### Tweakable Hash functions {#Preliminaries-tweakable-hashes}
 
@@ -219,26 +231,39 @@ the security proofs the reader should see {{AABBHHJM23}}.
 We define a batch signature as a triple of algorithms
 - **Batch signature** a batch signature scheme is comprised of _KeyGen_, _BSign_, _Verify_ whereby:
   - _KeyGen(k)_ outputs a keypair _sk, pk_ where _k_ is a security parameter
-  - _BSign(sk, M)_ the batch signing algorithm takes as input a list of messages _M = {msg-i}_ and outputs a list of signatures _S=\{sig-i\}_. We write _S <-- BSign(sk,M)_
-  - PVerify(pk, sig, msg)_. We call the verification _PVerify_ to represent Path Verification, because in the construction outlined below, verification involves an extra step of verifying a sibling path, which _Verify_ in the ordinary DSA setting does not do.
+  - _BSign(sk, M)_ the batch signing algorithm takes as input a list of messages _M = {msg-i}_
+    and outputs a list of signatures _S=\{sig-i\}_. We write _S <-- BSign(sk,M)_
+  - PVerify(pk, sig, msg)_. We call the verification _PVerify_ to represent Path Verification,
+    because in the construction outlined below, verification involves an extra step of verifying
+    a sibling path, which _Verify_ in the ordinary DSA setting does not do.
 
 ## Merkle tree batch signature {#construction-merkle-tree}
 
-Our construction relies on a Merkle tree. When addressing nodes in a Merkle tree of height _h_ with _N_ leaves, we may label nodes and leaves in the tree by their position: _T\[i,k\]_ is the _i_-th node at height _k_, counting from left to right and from bottom upwards (i.e. leaves are on height _0_ and the root is on height _h_. We illustrate this in {{fig-merkle-tree}}.
+Our construction relies on a Merkle tree. When addressing nodes in a Merkle tree of height _h_
+with _N_ leaves, we may label nodes and leaves in the tree by their position: _T\[i,k\]_ is the
+_i_-th node at height _k_, counting from left to right and from bottom upwards (i.e. leaves are
+on height _0_ and the root is on height _h_. We illustrate this in {{fig-merkle-tree}}.
 
-Let _Sig=(KeyGen, Sign, Verify)_ be a DSA as defined in {{Preliminaries-signatures}}, let _thash_ be a tweakable hash function as defined in {{Preliminaries-tweakable-hashes}}. We define our batch signature scheme  _BSig = (KeyGen, BSign, BVerify_ with _KeyGen := Sig.KeyGen_ and _BSign, Verify_ as in {{construction-batch-signature-definition}} respectively.
+Let _Sig=(KeyGen, Sign, Verify)_ be a DSA as defined in {{Preliminaries-signatures}}, let _thash_
+be a tweakable hash function as defined in {{Preliminaries-tweakable-hashes}}. We define our batch
+signature scheme  _BSig = (KeyGen, BSign, BVerify_ with _KeyGen := Sig.KeyGen_ and _BSign, Verify_
+as in {{construction-batch-signature-definition}} respectively.
 
-Here we describe the case of binary Merkle trees. In the case where _N_ is not a power of _2_, one can pad the tree by repeating leaves, or else continue with an incomplete tree.
+Here we describe the case of binary Merkle trees. In the case where _N_ is not a power of _2_, one
+can pad the tree by repeating leaves, or else continue with an incomplete tree.
 
 ## Signing {#construction-signing}
 
-_BSign(sk, M=\[msg-0,...,msg-N-1\])_ where _N=2^n_. We first treat the case that _N_ is a power of _2_, and then consider incomplete trees using standard methods.
+_BSign(sk, M=\[msg-0,...,msg-N-1\])_ where _N=2^n_. We first treat the case that _N_ is a power of
+_2_, and then consider incomplete trees using standard methods.
 
 ### Tree computation {#construction-tree}
 
-- **Initialize tree** _T[ ]_, which is indexed by the level, and then the row index, e.g. _T[3,5]_ is the fifth node on level 3 of _T_. Height _h <-- log2(N)_
+- **Initialize tree** _T[ ]_, which is indexed by the level, and then the row index, e.g. _T[3,5]_
+  is the fifth node on level 3 of _T_. Height _h <-- log2(N)_
 - **Tree identifier** Sample a tree identifier _id <--$ {0,1}^k_
-- **Generate leaves** For leaf _i in [0,...,N-1]_, sample randomness _r-i <--$ {0,1}^k_. Then set _T[0,i] = H(id, 0, i, r-i, msg-i)._
+- **Generate leaves** For leaf _i in [0,...,N-1]_, sample randomness _r-i <--$ {0,1}^k_. Then set
+  _T[0,i] = H(id, 0, i, r-i, msg-i)._
 - **Populate tree** For levels _l in [1,..., h]_ compute level _l_ from level _l-1_ as follows:
   - Initialize level _l_ with half as many elements as level _l-1_.
   - For node _j_ on level _l_, set _left=T[l-1, 2j]_ and _right=T[l-1, 2j+1]_
@@ -277,7 +302,9 @@ _BSign(sk, M=\[msg-0,...,msg-N-1\])_ where _N=2^n_. We first treat the case that
 
 ## Verification {#construction-verification}
 
-Verification proceeds by first reconstructing the root hash via the leaf information (public parameters, tweak, message) and iteravely hashing with the nodes provided in the sibling path. Next the base verification algorithm is called to verify the base DSA signature of the root.
+Verification proceeds by first reconstructing the root hash via the leaf information (public parameters, tweak, message)
+and iteratively hashing with the nodes provided in the sibling path. Next the base verification algorithm
+is called to verify the base DSA signature of the root.
 
 - **Generate leaf hash** Get hash from public parameter, tweak, and message _h <-- H(id, 0, i, r, msg)_.
 - **Reconstruct root** Set _l=0_. For _l in [ 1, ..., h]_ set _j <-- floor(i/2^l)_.
@@ -289,7 +316,6 @@ Verification proceeds by first reconstructing the root hash via the leaf informa
 <!-- How are tree id's generated in a cross-instantiation-secure way? Are we worried about collisions? λ only ranges up to 256. -->
 <!-- Maybe domain separate the tree hash function H with a label prefix before the rest -->
 <!-- How does this differ from Merkle Tree Certificates? 'It has a merkle tree in it' -->
-
 
 
 # Security Considerations {#security-considerations}
@@ -305,27 +331,57 @@ and being signed roughly at the same time.
 
 ## Correctness {#correctness}
 
-Correctness can be broken down into correctness of the base DSA, and correctness of the Merkle tree. Correctness is considered a security property, and is generally proven for each DSA, so we only need to demonstrate correctness of the Merkle tree root. The Merkle proof assures that a message is a leaf at a given index or address, in the tree identified by _id_, and nothing more.
+Correctness can be broken down into correctness of the base DSA, and correctness of the Merkle tree.
+Correctness is considered a security property, and is generally proven for each DSA, so we only need
+to demonstrate correctness of the Merkle tree root. The Merkle proof assures that a message is a leaf
+at a given index or address, in the tree identified by _id_, and nothing more.
 
-Hash functions are symmetric and therefore deterministic in nature, therefore, given the correct sibling path as part of the signer's signature, will generate the Merkle tree root correctly. Given an accepting (message, signature) pair, so long as one uses a hash function that provides second preimage resistance (from which the tweakable hash then provides SM-TCR), this guarantees that - except with negligible probability - the proof must be valid only for the message provided.
+Hash functions are symmetric and therefore deterministic in nature, therefore, given the correct
+sibling path as part of the signer's signature, will generate the Merkle tree root correctly. Given
+an accepting (message, signature) pair, so long as one uses a hash function that provides second
+preimage resistance (from which the tweakable hash then provides SM-TCR), this guarantees that - except
+with negligible probability - the proof must be valid only for the message provided.
 
 ## Domain separation {#dom-sep}
 
-Our construction uses tweakable hashfunctions which take as input a public parameter _id_, a tweak _t_, and a message _msg_. The public parameter domain separates between Merkle trees used in the same protocol. In {{BEN20}} it is suggested that TLS context strings are used to prevent cross-protocol attacks, however we note here that _msg_, which is the full protocol transcript up to that point, includes such protocol context strings. Therefore domain separation is handled implicitly. However in an idea world all protocols would agree on a uniform approach to domain separation, and so we invite comment on how to concretely handle this aspect.
+Our construction uses tweakable hashfunctions which take as input a public parameter _id_, a tweak _t_,
+and a message _msg_. The public parameter domain separates between Merkle trees used in the same
+protocol. In {{BEN20}} it is suggested that TLS context strings are used to prevent cross-protocol
+attacks, however we note here that _msg_, which is the full protocol transcript up to that point,
+includes such protocol context strings. Therefore domain separation is handled implicitly. However
+in an idea world all protocols would agree on a uniform approach to domain separation, and so we
+invite comment on how to concretely handle this aspect.
 
 ## Target collision resistance vs collision resistance {#tcr-vs-cr}
 
-Instead of collision resistance, relying on the weaker property of TCR, and more specifically SM-TCR, increases the attack complexity of finding a forgery and breaking the scheme. The result is that smaller hash outputs are required to achieve an equivalent security level. This key modification versus {{BEN20}} thus provides smaller signatures or higher security for the same sized signatures. The reduction in signature size is _(h-1) * d_ where _h_ is the tree height and _d_ is the difference between the hash output length based on SM-TCR and that based on collision resistance.
+Instead of collision resistance, relying on the weaker assumption of TCR, and more specifically SM-TCR,
+increases the attack complexity of finding a forgery and breaking the scheme. The result is that
+smaller hash outputs are required to achieve an equivalent security level. This key modification
+versus {{BEN20}} thus provides smaller signatures or higher security for the same sized signatures.
+
+The reduction in signature size is _(h-1) * d_ where _h_ is the tree height and _d_ is the difference
+between the hash output length based on SM-TCR and that based on collision resistance. Usually TCR
+implies using, for example, 128b digests to achieve 128b security, whereas basing on CR would require
+256b digests. This change therefore in essence halves the size of the Merkle tree proofs.
 
 # Post-quantum and hybrid signatures {#pqc}
 
-**Digital signatures** The transition to post-quantum cryptography (PQC) coincides with increasing demands on performance and throughput. Post-quantum signatures suffer worse performance both on computation and public key/signature sizes versus their quantum-vulnerable counterparts which are based on elliptic curve cryptography and RSA. As a result, techniques to boost performance are especially relevant in this case. In {{pqc-signature-sizes}} one can see that the extra size cost due to the sibling path is roughly independent of the algorithm used (therefore relatively much smaller for PQC).
+**Digital signatures** The transition to post-quantum cryptography (PQC) coincides with increasing demands
+on performance and throughput. Post-quantum signatures suffer worse performance both on computation and
+public key/signature sizes versus their quantum-vulnerable counterparts which are based on elliptic curve
+cryptography and RSA. As a result, techniques to boost performance are especially relevant in this case.
+In {{pqc-signature-sizes}} one can see that the extra size cost due to the sibling path is roughly
+independent of the algorithm used (therefore relatively much smaller for PQC).
 
-**Hash functions** In contrast to DSAs, Hash functions are purely symmetric cryptography which is weakened but not broken by quantum computers. Therefore the Merkle tree construction is not affected in the post-quantum era, other than a doubling of parameters (in the worst case) to achieve the same security level.
+**Hash functions** In contrast to DSAs, Hash functions are purely symmetric cryptography which is weakened
+but not broken by quantum computers. Therefore the Merkle tree construction is not affected in the
+post-quantum era, other than a doubling of parameters (in the worst case) to achieve the same security level.
 
 ## Signature sizes {#pqc-signature-sizes}
 
-In {{Table1}} one can see the size of a batch signature which signs 16 or 32 transcripts, relative to the size of the underlying primitive. For post-quantum schemes the overhead in size is relatively small due to the much larger sizes of the base DSAs.
+In {{Table1}} one can see the size of a batch signature which signs 16 or 32 transcripts, relative to the
+size of the underlying primitive. For post-quantum schemes the overhead in size is relatively small due
+to the much larger sizes of the base DSAs.
 
 ~~~
 +--------------------+-----+------+-------+----+--------+
@@ -346,42 +402,67 @@ In {{Table1}} one can see the size of a batch signature which signs 16 or 32 tra
 
 ## Hybrid signatures {pqc-hybrid}
 
-A likely mode of transition to PQC will be via 'hybrid mode', where data is protected independently via two algorithms, one quantum-vulnerable (but well studied and understood) and one PQC algorithm. This is to mitigate the risk of a complete break - classical or quantum - of a PQC algorithm. Breaking a hybrid scheme should imply breaking _both_ of the algorithms used.
+A likely mode of transition to PQC will be via 'hybrid mode', where data is protected independently via two
+algorithms, one quantum-vulnerable (but well studied and understood) and one PQC algorithm. This is to
+mitigate the risk of a complete break - classical or quantum - of a PQC algorithm. Breaking a hybrid scheme
+should imply breaking _both_ of the algorithms used.
 
-We do not discuss the details of such hybrid signatures or hybrid certificates in this document, but simply state that so long as the hybrid scheme adheres to the API described above, the Batch signature Merkle tree construction described in this document remains unaltered. Explicitly, the root is generated via the procedure of {{construction-tree}}. Then the root is signed by the hybrid DSA, whose functions _KeyGen_, _Sign_, _Verify_ are constructed via some composition of _KeyGen_, _Sign_, _Verify_ for a PQC algorithm and _KeyGen_, _Sign_, _Verify_ for some presently-used algorithm.
+We do not discuss the details of such hybrid signatures or hybrid certificates in this document, but simply
+state that so long as the hybrid scheme adheres to the API described above, the Batch signature Merkle tree
+construction described in this document remains unaltered. Explicitly, the root is generated via the procedure
+of {{construction-tree}}. Then the root is signed by the hybrid DSA, whose functions _KeyGen_, _Sign_, _Verify_
+are constructed via some composition of _KeyGen_, _Sign_, _Verify_ for a PQC algorithm and _KeyGen_, _Sign_,
+_Verify_ for some presently-used algorithm.
 
 ## Privacy {#privacy}
 
 In {{AABBHHJM23}} two privacy notions are defined:
 
 - **Batch Privacy** can one cannot deduce whether two messages were signed in the same batch.
-- **weak Batch Privacy** for two messages signed in the same batch, if one is given the signature for one message, it does not leak any information about the other message, for which no signature is available.
+- **weak Batch Privacy** for two messages signed in the same batch, if one is given the signature for one
+-  message, it does not leak any information about the other message, for which no signature is available.
 
-The authors prove in {{AABBHHJM23}} that this construction achieves the weaker variant, but not full Batch Privacy.
+The authors prove in {{AABBHHJM23}} that this construction achieves the weaker variant, but not full Batch
+Privacy.
 
 # Relationship to Merkle Tree Certificates {#relationship-MTC}
 
-A Merkle tree construction for TLS certificates {{BEN23}} is being developed at the time of writing, by the same author of the original Merkle tree signing draft {{BEN20}}. The construction bears strong similarities to the current proposal. In ordinary TLS certificates, a Certificate Authority (CA) signs a certificate which asserts that a public key belongs to a given subscriber. In the Merkle tree construction, many certificates are batched together using a similar Merkle tree construction to the one presented in this document. The CA then signs only the root of the Merkle tree, and returns (root signature + sibling path) to the subscriber.
+A Merkle tree construction for TLS certificates {{BEN23}} is being developed at the time of writing, by the
+same author of the original Merkle tree signing draft {{BEN20}}. The construction bears strong similarities
+to the current proposal. In ordinary TLS certificates, a Certificate Authority (CA) signs a certificate which
+asserts that a public key belongs to a given subscriber. In the Merkle tree construction, many certificates
+are batched together using a similar Merkle tree construction to the one presented in this document. The CA
+then signs only the root of the Merkle tree, and returns (root signature + sibling path) to the subscriber.
 
 A client verifies a server's identity by:
 
-- Verifying a server's signature: the server signs the TLS transcript up to that point with their private key and the client verifies with the server's public key _pk_.
-- Verifying that the public key belongs to the server by verifying the trusted CA's signatures certificate which states that the server owns _pk_.
+- Verifying a server's signature: the server signs the TLS transcript up to that point with their private
+  key and the client verifies with the server's public key _pk_.
+- Verifying that the public key belongs to the server by verifying the trusted CA's signatures certificate
+  which states that the server owns _pk_.
   - Doing this repeatedly in the case of certificate chains until reaching a root CA.
 
-The document of {{BEN23}} relates specifically to signing certificates, the second bullet above, whereas the constructions of {{BEN20}} and this document pertain to a server authenticating itself online, relating to the first bullet above. The two have slightly different usecases, which both benefit from Merkle tree constructions under different scenarios.
+The document of {{BEN23}} relates specifically to signing certificates, the second bullet above, whereas the
+constructions of {{BEN20}} and this document pertain to a server authenticating itself online, relating to
+the first bullet above. The two have slightly different usecases, which both benefit from Merkle tree
+constructions under different scenarios.
 
-Cases where Merkle tree certificates may be appropriate have certain properties: 
+Cases where Merkle tree certificates may be appropriate have certain properties:
 
 - Certificates are short-lived.
 - Certificates are issued after a significant delay, e.g. around one hour.
-- Batch sizes can be estimated to be up to 2^24 (based on unexpired number of certificates in certificate transparency logs)
+- Batch sizes can be estimated to be up to 2^24 (based on unexpired number of certificates in certificate
+  transparency logs)
 
 Cases where TLS batch signing may be appropriate differ slightly, for example:
 
-- High throughput servers and load balancers - in particular when rate of incoming signing requests exceeds _(time * threads)_ where _time_ is the average time for a signing thread to generate a signature, and _threads_ is the number of available signing threads. 
-- In scenarios where the latency is not extremely sensitive: waiting for signatures to arrive before constructing a Merkle tree incurs a small extra latency cost which is amortised by the significant extra throughput achievable.
-- Batch sizes are likely to be smaller than the usecase for Merkle tree certificates. Batch sizes of 16 or 32 can already improve throughput by an order of magnitude.
+- High throughput servers and load balancers - in particular when rate of incoming signing requests exceeds
+  _(time * threads)_ where _time_ is the average time for a signing thread to generate a signature, and
+  _threads_ is the number of available signing threads.
+- In scenarios where the latency is not extremely sensitive: waiting for signatures to arrive before constructing
+  a Merkle tree incurs a small extra latency cost which is amortised by the significant extra throughput achievable.
+- Batch sizes are likely to be smaller than the usecase for Merkle tree certificates. Batch sizes of 16 or 32 can
+  already improve throughput by an order of magnitude.
 
 # Acknowledgements {#acknowledgements}
 
