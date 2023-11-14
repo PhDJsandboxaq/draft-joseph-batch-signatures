@@ -147,6 +147,16 @@ higher than those of ECDSA; the fastest currently-deployed primitive for signing
 This severely impacts the ability of systems to scale and inhibits their migration
 to PQC, especially in higher-throughput settings.
 
+## Scope {#scope}
+
+This document describes a construction for batch signatures based upon a Merkle tree
+design. The total signature consists of a signature of the root of the Merkle tree,
+as well as the sibling path of the individual message. We discuss the applicability
+of such signatures to various protocols, but only at a high level. The document describes
+a scheme which enables smaller signatures than outlined in {{BEN20}} by relying not
+on hash collision resistance, but instead on target collision resistance, however for
+the security proofs the reader should see {{AABBHHJM23}}.
+
 # Preliminaries {#Preliminaries}
 
 ## Signatures {#Preliminaries-signatures}
@@ -162,7 +172,7 @@ to PQC, especially in higher-throughput settings.
 ## Hash functions {#Preliminaries-hashes}
 
 In this work we consider _tweakable_ hash functions. These are keyed hash functions
-that take an additional input which can be thought of as a domain separator (while
+that take an additional input which can be thought of as a per-user domain separator (while
 the key or public parameter serves as a separator between users). Tweakable hash
 functions allow us to tightly achieve target collision resistance even in multi-target
 settings where an adversary wins when they manage to attack one out of many targets.
@@ -213,16 +223,6 @@ can be reduced in addition; namely, if a given entity (is aware that it) receive
 multiple signatures from the same batch. In this case, sending the signed root
 multiple times is redundant and we can asymptotically reduce the amount of
 received information to a few hashes per message.
-
-## Scope {#scope}
-
-This document describes a construction for batch signatures based upon a Merkle tree
-design. The total signature consists of a signature of the root of the Merkle tree,
-as well as the sibling path of the individual message. We discuss the applicability
-of such signatures to various protocols, but only at a high level. The document describes
-a scheme which enables smaller signatures than outlined in {{BEN20}} by relying not
-on hash collision resistance, but instead on target collision resistance, however for
-the security proofs the reader should see {{AABBHHJM23}}.
 
 # Batch signature construction {#construction}
 
@@ -329,6 +329,17 @@ verification/signature costs are significant. It also implies that the
 main criterion for being on a same batch are: being signed by the same CA,
 and being signed roughly at the same time.
 
+## Privacy {#privacy}
+
+In {{AABBHHJM23}} two privacy notions are defined:
+
+- **Batch Privacy** can one cannot deduce whether two messages were signed in the same batch.
+- **weak Batch Privacy** for two messages signed in the same batch, if one is given the signature for one
+-  message, it does not leak any information about the other message, for which no signature is available.
+
+The authors prove in {{AABBHHJM23}} that this construction achieves the weaker variant, but not full Batch
+Privacy.
+
 ## Correctness {#correctness}
 
 Correctness can be broken down into correctness of the base DSA, and correctness of the Merkle tree.
@@ -413,17 +424,6 @@ construction described in this document remains unaltered. Explicitly, the root 
 of {{construction-tree}}. Then the root is signed by the hybrid DSA, whose functions _KeyGen_, _Sign_, _Verify_
 are constructed via some composition of _KeyGen_, _Sign_, _Verify_ for a PQC algorithm and _KeyGen_, _Sign_,
 _Verify_ for some presently-used algorithm.
-
-## Privacy {#privacy}
-
-In {{AABBHHJM23}} two privacy notions are defined:
-
-- **Batch Privacy** can one cannot deduce whether two messages were signed in the same batch.
-- **weak Batch Privacy** for two messages signed in the same batch, if one is given the signature for one
--  message, it does not leak any information about the other message, for which no signature is available.
-
-The authors prove in {{AABBHHJM23}} that this construction achieves the weaker variant, but not full Batch
-Privacy.
 
 # Relationship to Merkle Tree Certificates {#relationship-MTC}
 
