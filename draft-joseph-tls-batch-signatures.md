@@ -183,26 +183,10 @@ hash validator. It is easiest to compute via prepending the key to the message b
 computing the hash _h <-- H(v | msg)_. Let _Hv_ denote the family of hash functions
 keyed with _v_.
 
-### Hash function properties {#Preliminaries-hash-properties}
-
-* Collision resistance - no two inputs _x1, x2_ should map to the same output hash
-  (regardless of choice of key in the case of a keyed hash).
-* Preimage resistance - it should be difficult to guess the input value _x_ for a hash
-  function given only its output _H(x)_.
-* Second preimage resistance - given an input _x1_, it should be difficult to find
-  another distinct input _x2_ such that _H(x1)=H(x2)_.
-* Target collision resistance - choose input _x1_. Then given a key _v_, find _x2_
- such that _Hv(x1) = Hv(x2)_.
-
-Target collision resistance is a weaker requirement than collision resistance but is
-sufficient for signing purposes. Tweakable hash functions enable us to tightly achieve
-TCR even in multi-target settings where an adversary can attack one out of many targets.
-Specifically, the property achieved in the following is _single-function multi-target
-collision resistance_ (SM-TCR) which is described more formally in {{AABBHHJM23}}.
-
 ### Tweakable Hash functions {#Preliminaries-tweakable-hashes}
 
-One form of keyed hash function is a tweakable hash function, which enables one to obtain SM-TCR:
+One form of keyed hash function is known as a tweakable hash function, which enables one to obtain SM-TCR,
+a property described in {{##hash-properties}}:
 
  - **Tweakable Hash functions** A _tweakable hash function_ is a tuple of algorithms _H=(KeyGen, Eval)_ such that:
      - _KeyGen_ takes the security parameter _k_ and outputs a (possibly empty) public
@@ -339,6 +323,26 @@ In {{AABBHHJM23}} two privacy notions are defined:
 
 The authors prove in {{AABBHHJM23}} that this construction achieves the weaker variant, but not full Batch
 Privacy.
+
+## Hash function properties {#hash-properties}
+
+Some common security properties of cryptographic hash functions are as follows:
+
+* Collision resistance - no two inputs _x1, x2_ should map to the same output hash
+  (regardless of choice of key in the case of a keyed hash).
+* Preimage resistance - it should be difficult to guess the input value _x_ for a hash
+  function given only its output _H(x)_.
+* Second preimage resistance - given an input _x1_, it should be difficult to find
+  another distinct input _x2_ such that _H(x1)=H(x2)_.
+* Target collision resistance - choose input _x1_. Then given a key _v_, find _x2_
+ such that _Hv(x1) = Hv(x2)_.
+
+Target collision resistance is a weaker requirement than collision resistance but is
+sufficient for signing purposes. Tweakable hash functions, defined in 
+{{#Preliminaries-tweakable-hashes}} enable us to tightly achieve
+TCR even in multi-target settings where an adversary can attack one out of many targets.
+Specifically, the property achieved in the following is _single-function multi-target
+collision resistance_ (SM-TCR) which is described more formally in {{AABBHHJM23}}.
 
 ## Correctness {#correctness}
 
