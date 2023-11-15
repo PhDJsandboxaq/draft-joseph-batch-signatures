@@ -195,6 +195,13 @@ a property described in {{##hash-properties}}:
    in _\[0,1\]^m_ and returns a hash value _h_. We write _h <-- Eval(p,t,msg)_ or
    simply _h <-- H(p,t,msg)_.
 
+In the remainder of the document, consider a keyed hash function that takes 5 (leaf) or 6 (non-leaf node) inputs:
+For the leaf case, among the inputs to _H(id,0,i,ri,msg)_, _id, 0_ may be thought of together as the public parameter,
+_i_ is the tweak, and _t, msg_ is the message. In the non-leaf case, the keyed hash takes 6 inputs H(id,1,l,j,left,right).
+Here (id, 1) are the public parameter, (l, j) are the tweak (these represent the address of the node in the tree),
+and (left, right) are the children nodes which replace msg in non-leaf layers of the tree. The inputs are concatenated
+in the order described before being input to the hash function.
+
 
 ## Motivation for batching messages before signing {#motivation}
 
@@ -230,7 +237,7 @@ on height _0_ and the root is on height _h_. We illustrate this in {{fig-merkle-
 
 Let _Sig=(KeyGen, Sign, Verify)_ be a DSA as defined in {{Preliminaries-signatures}}, let _thash_
 be a tweakable hash function as defined in {{Preliminaries-tweakable-hashes}}. We define our batch
-signature scheme  _BSig = (KeyGen, BSign, BVerify_ with _KeyGen := Sig.KeyGen_ and _BSign, Verify_
+signature scheme  _BSig = (KeyGen, BSign, BVerify)_ with _KeyGen := Sig.KeyGen_ and _BSign, Verify_
 as in {{construction-batch-signature-definition}} respectively.
 
 Here we describe the case of binary Merkle trees. In the case where _N_ is not a power of _2_, one
