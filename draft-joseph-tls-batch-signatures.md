@@ -196,8 +196,8 @@ a property described in {{##hash-properties}}:
    simply h <-- H(p,t,msg).
 
 In the remainder of the document, consider a keyed hash function that takes 5 (leaf) or 6 (non-leaf node) inputs:
-For the leaf case, among the inputs to H(id,0,i,ri,msgi), (id,0) may be thought of together as the public parameter,
-(i) is the tweak, and (ri,msgi) is the message. In the non-leaf case, the keyed hash takes 6 inputs H(id,1,l,j,left,right).
+For the leaf case, among the inputs to H(id,0,i,r-i,msg-i), (id,0) may be thought of together as the public parameter,
+(i) is the tweak, and (r-i,msg-i) is the message. In the non-leaf case, the keyed hash takes 6 inputs H(id,1,l,j,left,right).
 Here (id,1) are the public parameter, (l,j) are the tweak (these represent the address of the node in the tree),
 and (left, right) are the children nodes which replace msg in non-leaf layers of the tree. The inputs are concatenated
 in the order described before being input to the hash function.
