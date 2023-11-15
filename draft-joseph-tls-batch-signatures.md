@@ -162,43 +162,43 @@ the security proofs the reader should see {{AABBHHJM23}}.
 ## Signatures {#Preliminaries-signatures}
 
 - **DSA** Digital Signature Algorithm, a public key cryptography primitive
-  consisting of a triple of algorithms _KeyGen_, _Sign_, _Verify_ whereby:
-  - _KeyGen(k)_ outputs a keypair _sk, pk_ where _k_ is a security parameter
-  - _Sign(sk, msg) = s_
-  - _Verify(pk, s, msg) = b_. When _b=1_, the result is ACCEPT which occurs
-    on receipt of message, correctly signed with the secret key _sk_ corresponding
-    to _pk_. Otherwise the result is REJECT when _b=0_.
+  consisting of a triple of algorithms KeyGen, Sign, Verify whereby:
+  - KeyGen(k) outputs a keypair sk, pk where k is a security parameter
+  - Sign(sk, msg) = s
+  - Verify(pk, s, msg) = b. When b=1, the result is ACCEPT which occurs
+    on receipt of message, correctly signed with the secret key sk corresponding
+    to pk. Otherwise the result is REJECT when b=0.
 
 ## Hash functions {#Preliminaries-hashes}
 
-In this work we consider _tweakable_ hash functions. These are keyed hash functions
+In this work we consider tweakable hash functions. These are keyed hash functions
 that take an additional input which can be thought of as a per-user domain separator (while
 the key or public parameter serves as a separator between users). Tweakable hash
 functions allow us to tightly achieve target collision resistance even in multi-target
 settings where an adversary wins when they manage to attack one out of many targets.
 
 - **Keyed Hash function** A keyed hash function is one that outputs a hash that depends
-both on a message _msg_ and a key _v_ that is shared by both the hash generator and the
+both on a message msg and a key v that is shared by both the hash generator and the
 hash validator. It is easiest to compute via prepending the key to the message before
-computing the hash _h <-- H(v | msg)_. Let _Hv_ denote the family of hash functions
-keyed with _v_.
+computing the hash h <-- H(v | msg). Let Hv denote the family of hash functions
+keyed with v.
 
 ### Tweakable Hash functions {#Preliminaries-tweakable-hashes}
 
 One form of keyed hash function is known as a tweakable hash function, which enables one to obtain SM-TCR,
 a property described in {{##hash-properties}}:
 
- - **Tweakable Hash functions** A _tweakable hash function_ is a tuple of algorithms _H=(KeyGen, Eval)_ such that:
-     - _KeyGen_ takes the security parameter _k_ and outputs a (possibly empty) public
-   parameter _p_. We write _p <-- KeyGen(k)_.
-     - _Eval_ is deterministic and takes public parameters _p_, a tweak _t_, an input _msg_
-   in _\[0,1\]^m_ and returns a hash value _h_. We write _h <-- Eval(p,t,msg)_ or
-   simply _h <-- H(p,t,msg)_.
+ - **Tweakable Hash functions** A tweakable hash function is a tuple of algorithms H=(KeyGen, Eval) such that:
+     - KeyGen takes the security parameter k and outputs a (possibly empty) public
+   parameter p. We write p <-- KeyGen(k).
+     - Eval is deterministic and takes public parameters p, a tweak t, an input msg
+       \[0,1\]^m and returns a hash value h. We write h <-- Eval(p,t,msg) or
+   simply h <-- H(p,t,msg).
 
 In the remainder of the document, consider a keyed hash function that takes 5 (leaf) or 6 (non-leaf node) inputs:
-For the leaf case, among the inputs to _H(id,0,i,ri,msg)_, _id, 0_ may be thought of together as the public parameter,
-_i_ is the tweak, and _t, msg_ is the message. In the non-leaf case, the keyed hash takes 6 inputs H(id,1,l,j,left,right).
-Here (id, 1) are the public parameter, (l, j) are the tweak (these represent the address of the node in the tree),
+For the leaf case, among the inputs to H(id,0,i,ri,msgi), (id,0) may be thought of together as the public parameter,
+(i) is the tweak, and (ri,msgi) is the message. In the non-leaf case, the keyed hash takes 6 inputs H(id,1,l,j,left,right).
+Here (id,1) are the public parameter, (l,j) are the tweak (these represent the address of the node in the tree),
 and (left, right) are the children nodes which replace msg in non-leaf layers of the tree. The inputs are concatenated
 in the order described before being input to the hash function.
 
@@ -220,55 +220,55 @@ received information to a few hashes per message.
 ## Batch signature definition {#construction-batch-signature-definition}
 
 We define a batch signature as a triple of algorithms
-- **Batch signature** a batch signature scheme is comprised of _KeyGen_, _BSign_, _Verify_ whereby:
-  - _KeyGen(k)_ outputs a keypair _sk, pk_ where _k_ is a security parameter
-  - _BSign(sk, M)_ the batch signing algorithm takes as input a list of messages _M = {msg-i}_
-    and outputs a list of signatures _S=\{sig-i\}_. We write _S <-- BSign(sk,M)_
-  - PVerify(pk, sig, msg)_. We call the verification _PVerify_ to represent Path Verification,
+- **Batch signature** a batch signature scheme is comprised of KeyGen, BSign, Verify whereby:
+  - KeyGen(k) outputs a keypair sk, pk where k is a security parameter
+  - BSign(sk, M) the batch signing algorithm takes as input a list of messages M = {msg-i}
+    and outputs a list of signatures S=\{sig-i\}. We write S <-- BSign(sk,M)
+  - PVerify(pk, sig, msg). We call the verification PVerify to represent Path Verification,
     because in the construction outlined below, verification involves an extra step of verifying
-    a sibling path, which _Verify_ in the ordinary DSA setting does not do.
+    a sibling path, which Verify in the ordinary DSA setting does not do.
 
 ## Merkle tree batch signature {#construction-merkle-tree}
 
-Our construction relies on a Merkle tree. When addressing nodes in a Merkle tree of height _h_
-with _N_ leaves, we may label nodes and leaves in the tree by their position: _T\[i,k\]_ is the
-_i_-th node at height _k_, counting from left to right and from bottom upwards (i.e. leaves are
-on height _0_ and the root is on height _h_. We illustrate this in {{fig-merkle-tree}}.
+Our construction relies on a Merkle tree. When addressing nodes in a Merkle tree of height h
+with N leaves, we may label nodes and leaves in the tree by their position: T\[i,k\] is the
+i-th node at height k, counting from left to right and from bottom upwards (i.e. leaves are
+on height 0 and the root is on height h. We illustrate this in {{fig-merkle-tree}}.
 
-Let _Sig=(KeyGen, Sign, Verify)_ be a DSA as defined in {{Preliminaries-signatures}}, let _thash_
+Let Sig=(KeyGen, Sign, Verify) be a DSA as defined in {{Preliminaries-signatures}}, let thash
 be a tweakable hash function as defined in {{Preliminaries-tweakable-hashes}}. We define our batch
-signature scheme  _BSig = (KeyGen, BSign, BVerify)_ with _KeyGen := Sig.KeyGen_ and _BSign, Verify_
+signature scheme  BSig = (KeyGen, BSign, BVerify) with KeyGen := Sig.KeyGen and BSign, Verify
 as in {{construction-batch-signature-definition}} respectively.
 
-Here we describe the case of binary Merkle trees. In the case where _N_ is not a power of _2_, one
+Here we describe the case of binary Merkle trees. In the case where N is not a power of 2, one
 can pad the tree by repeating leaves, or else continue with an incomplete tree.
 
 ## Signing {#construction-signing}
 
-_BSign(sk, M=\[msg-0,...,msg-N-1\])_ where _N=2^n_. We first treat the case that _N_ is a power of
-_2_, and then consider incomplete trees using standard methods.
+BSign(sk, M=\[msg-0,...,msg-N-1\]) where N=2^n. We first treat the case that N is a power of
+2, and then consider incomplete trees using standard methods.
 
 ### Tree computation {#construction-tree}
 
-- **Initialize tree** _T[ ]_, which is indexed by the level, and then the row index, e.g. _T[3,5]_
-  is the fifth node on level 3 of _T_. Height _h <-- log2(N)_
-- **Tree identifier** Sample a tree identifier _id <--$ {0,1}^k_
-- **Generate leaves** For leaf _i in [0,...,N-1]_, sample randomness _r-i <--$ {0,1}^k_. Then set
-  _T[0,i] = H(id, 0, i, r-i, msg-i)._
-- **Populate tree** For levels _l in [1,..., h]_ compute level _l_ from level _l-1_ as follows:
-  - Initialize level _l_ with half as many elements as level _l-1_.
-  - For node _j_ on level _l_, set _left=T[l-1, 2j]_ and _right=T[l-1, 2j+1]_
-  - _id_ is the public parameter, _(1, l, j)_ is the tweak.
-  - _T[l, j] <-- H(id, 1, l, j, left, right)_
-- **Root** set _root <-- T[h,0]_
+- **Initialize tree** T[ ], which is indexed by the level, and then the row index, e.g. T[3,5]
+  is the fifth node on level 3 of T. Height h <-- log2(N)
+- **Tree identifier** Sample a tree identifier id <--$ {0,1}^k
+- **Generate leaves** For leaf i in [0,...,N-1], sample randomness r-i <--$ {0,1}^k. Then set
+  T[0,i] = H(id, 0, i, r-i, msg-i).
+- **Populate tree** For levels l in [1,..., h] compute level l from level l-1 as follows:
+  - Initialize level l with half as many elements as level l-1.
+  - For node j on level l, set left=T[l-1, 2j] and right=T[l-1, 2j+1]
+  - id is the public parameter, (1, l, j) is the tweak.
+  - T[l, j] <-- H(id, 1, l, j, left, right)
+- **Root** set root <-- T[h,0]
 
 ### Signature construction {#construction-signature}
 
-- **Sign the root** Use the base DSA to sign the root of the Merkle tree _rootsig <-- Sign(sk, id, root, N)_
-- **Sibling path** For each leaf: The sibling path is an array of _h-1_ hashes. Compute the sibling path as follows:
-    * Initialize _path-i <-- \[\]_
-    * For _l in \[0, ..., N-1\]_, set _j <--floor(i / 2^l)_. If _j mod 2 = 0_ then _path-i\[l\]=T\[l,j+1\]_, else _path-i\[l\]=T\[l,j-1\]_
-- **Generate batch signatures** _bsig-i <-- (id, N, sig, i, r-i, path-i)_
+- **Sign the root** Use the base DSA to sign the root of the Merkle tree rootsig <-- Sign(sk, id, root, N)
+- **Sibling path** For each leaf: The sibling path is an array of h-1 hashes. Compute the sibling path as follows:
+    * Initialize path-i <-- \[\]
+    * For l in \[0, ..., N-1\], set j <--floor(i / 2^l). If j mod 2 = 0 then path-i\[l\]=T\[l,j+1\], else path-i\[l\]=T\[l,j-1\]
+- **Generate batch signatures** bsig-i <-- (id, N, sig, i, r-i, path-i)
 - **Return batch of signatures** batch signatures are \{bsig-1, ..., bsig-N\}
 
 {{fig-merkle-tree}} illustrates the construction of the Merkle tree and the signature of the root.
@@ -297,11 +297,11 @@ Verification proceeds by first reconstructing the root hash via the leaf informa
 and iteratively hashing with the nodes provided in the sibling path. Next the base verification algorithm
 is called to verify the base DSA signature of the root.
 
-- **Generate leaf hash** Get hash from public parameter, tweak, and message _h <-- H(id, 0, i, r, msg)_.
-- **Reconstruct root** Set _l=0_. For _l in [ 1, ..., h]_ set _j <-- floor(i/2^l)_.
-  - If _j mod 2 = 0_: set _h <-- H(id, 1, l, j, h, path[l])_.
-  - If _j mod 2 = 1_: set _h <-- H(id, 1, l, j, path[l], h)_.
-- **Verify root** Return _Verify(pk, sig, h)_.
+- **Generate leaf hash** Get hash from public parameter, tweak, and message h <-- H(id,0,i,r-i,msg-i).
+- **Reconstruct root** Set l=0. For l in [ 1, ..., h] set j <-- floor(i/2^l).
+  - If j mod 2 = 0: set h <-- H(id, 1, l, j, h, path[l]).
+  - If j mod 2 = 1: set h <-- H(id, 1, l, j, path[l], h).
+- **Verify root** Return Verify(pk, sig, h).
 
 <!-- Hybrid?  Can just do any other hybrid construction scheme, have BSign just call that internally as S.Sign, and S.Verify. We should consider the separability concerns etc though. -->
 <!-- How are tree id's generated in a cross-instantiation-secure way? Are we worried about collisions? λ only ranges up to 256. -->
@@ -335,28 +335,28 @@ Privacy.
 
 Some common security properties of cryptographic hash functions are as follows:
 
-* Collision resistance - no two inputs _x1, x2_ should map to the same output hash
+* Collision resistance - no two inputs x1, x2 should map to the same output hash
   (regardless of choice of key in the case of a keyed hash).
-* Preimage resistance - it should be difficult to guess the input value _x_ for a hash
-  function given only its output _H(x)_.
-* Second preimage resistance - given an input _x1_, it should be difficult to find
-  another distinct input _x2_ such that _H(x1)=H(x2)_.
-* Target collision resistance - choose input _x1_. Then given a key _v_, find _x2_
- such that _Hv(x1) = Hv(x2)_.
+* Preimage resistance - it should be difficult to guess the input value x for a hash
+  function given only its output H(x).
+* Second preimage resistance - given an input x1, it should be difficult to find
+  another distinct input x2 such that H(x1)=H(x2).
+* Target collision resistance - choose input x1. Then given a key v, find x2
+ such that Hv(x1) = Hv(x2).
 
 Target collision resistance is a weaker requirement than collision resistance but is
 sufficient for signing purposes. Tweakable hash functions, defined in 
 {{#Preliminaries-tweakable-hashes}} enable us to tightly achieve
 TCR even in multi-target settings where an adversary can attack one out of many targets.
-Specifically, the property achieved in the following is _single-function multi-target
-collision resistance_ (SM-TCR) which is described more formally in {{AABBHHJM23}}.
+Specifically, the property achieved in the following is Single-function Multi-Target
+Collision Resistance (SM-TCR) which is described more formally in {{AABBHHJM23}}.
 
 ## Correctness {#correctness}
 
 Correctness can be broken down into correctness of the base DSA, and correctness of the Merkle tree.
 Correctness is considered a security property, and is generally proven for each DSA, so we only need
 to demonstrate correctness of the Merkle tree root. The Merkle proof assures that a message is a leaf
-at a given index or address, in the tree identified by _id_, and nothing more.
+at a given index or address, in the tree identified by id, and nothing more.
 
 Hash functions are symmetric and therefore deterministic in nature, therefore, given the correct
 sibling path as part of the signer's signature, will generate the Merkle tree root correctly. Given
@@ -366,10 +366,10 @@ with negligible probability - the proof must be valid only for the message provi
 
 ## Domain separation {#dom-sep}
 
-Our construction uses tweakable hashfunctions which take as input a public parameter _id_, a tweak _t_,
-and a message _msg_. The public parameter domain separates between Merkle trees used in the same
+Our construction uses tweakable hashfunctions which take as input a public parameter id, a tweak t,
+and a message msg. The public parameter domain separates between Merkle trees used in the same
 protocol. In {{BEN20}} it is suggested that TLS context strings are used to prevent cross-protocol
-attacks, however we note here that _msg_, which is the full protocol transcript up to that point,
+attacks, however we note here that msg, which is the full protocol transcript up to that point,
 includes such protocol context strings. Therefore domain separation is handled implicitly. However
 in an idea world all protocols would agree on a uniform approach to domain separation, and so we
 invite comment on how to concretely handle this aspect.
@@ -381,7 +381,7 @@ increases the attack complexity of finding a forgery and breaking the scheme. Th
 smaller hash outputs are required to achieve an equivalent security level. This key modification
 versus {{BEN20}} thus provides smaller signatures or higher security for the same sized signatures.
 
-The reduction in signature size is _(h-1) * d_ where _h_ is the tree height and _d_ is the difference
+The reduction in signature size is (h-1) * d where h is the tree height and d is the difference
 between the hash output length based on SM-TCR and that based on collision resistance. Usually TCR
 implies using, for example, 128b digests to achieve 128b security, whereas basing on CR would require
 256b digests. This change therefore in essence halves the size of the Merkle tree proofs.
@@ -432,9 +432,9 @@ should imply breaking _both_ of the algorithms used.
 We do not discuss the details of such hybrid signatures or hybrid certificates in this document, but simply
 state that so long as the hybrid scheme adheres to the API described above, the Batch signature Merkle tree
 construction described in this document remains unaltered. Explicitly, the root is generated via the procedure
-of {{construction-tree}}. Then the root is signed by the hybrid DSA, whose functions _KeyGen_, _Sign_, _Verify_
-are constructed via some composition of _KeyGen_, _Sign_, _Verify_ for a PQC algorithm and _KeyGen_, _Sign_,
-_Verify_ for some presently-used algorithm.
+of {{construction-tree}}. Then the root is signed by the hybrid DSA, whose functions KeyGen, Sign, Verify
+are constructed via some composition of KeyGen, Sign, Verify for a PQC algorithm and KeyGen, Sign,
+Verify for some presently-used algorithm.
 
 # Relationship to Merkle Tree Certificates {#relationship-MTC}
 
@@ -448,9 +448,9 @@ then signs only the root of the Merkle tree, and returns (root signature + sibli
 A client verifies a server's identity by:
 
 - Verifying a server's signature: the server signs the TLS transcript up to that point with their private
-  key and the client verifies with the server's public key _pk_.
+  key and the client verifies with the server's public key pk.
 - Verifying that the public key belongs to the server by verifying the trusted CA's signatures certificate
-  which states that the server owns _pk_.
+  which states that the server owns pk.
   - Doing this repeatedly in the case of certificate chains until reaching a root CA.
 
 The document of {{BEN23}} relates specifically to signing certificates, the second bullet above, whereas the
@@ -468,7 +468,7 @@ Cases where Merkle tree certificates may be appropriate have certain properties:
 Cases where TLS batch signing may be appropriate differ slightly, for example:
 
 - High throughput servers and load balancers - in particular when rate of incoming signing requests exceeds
-  _(time * threads)_ where _time_ is the average time for a signing thread to generate a signature, and
+  (time * threads) where _time_ is the average time for a signing thread to generate a signature, and
   _threads_ is the number of available signing threads.
 - In scenarios where the latency is not extremely sensitive: waiting for signatures to arrive before constructing
   a Merkle tree incurs a small extra latency cost which is amortised by the significant extra throughput achievable.
